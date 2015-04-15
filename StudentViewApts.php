@@ -1,7 +1,7 @@
 // File: StudentViewApts.php
 // Author: KyleFritz
 // Date Created: 4/11/2015
-// Last Modified: 4/14/2015
+// Last Modified: 4/15/2015
 // Description: This page will only come up if the last page was StudentOptions.php 
 //   and "View Created Appointment" was created.
 
@@ -22,24 +22,12 @@ else{
 	// $studentId becomes whatever the Session variable of studentId holds
 	$studentId = $_SESSION['studentId'];
 
-	/*******  Not sure if $debug should be true or false *************/
-	$debug = true;
+	// $debug to true would print out the query whenever one was executed, false wouldn't
+	$debug = false;
 	$COMMON = new Common($debug);
-	// Select the times for appointments from the database Advising_Appointments2 where the student's Id occurs
-	$sql = "SELECT `dateTime` FROM `Advising_Appointments2` WHERE `studentId` LIKE '$studentId'";
+	// Select the ENTIRE ROW for appointments from the database Advising_Appointments2 where the student's Id occurs
+	$sql = "SELECT * FROM `Advising_Appointments2` WHERE `studentId` LIKE '$studentId'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
-	
-	
-	/**********  Not sure if all of this is useless now
-
-	// Set up variables to equal Session variables
-	$date = $_SESSION['date'];
-  	$time = $_SESSION['time'];
-  	$sqlFormatDate = date('Y-m-d', $date);
-	// Changed from h:i:s to H:i:s to allow for a 24 hour clock
-  	$sqlFormatTime = date('H:i:s', $time);
-	
-	***********************/
 	
 
 
@@ -53,7 +41,8 @@ else{
 	$upcomingApts = array();
 
 
-	while($row = mysql_fetch_row($rs)){
+	// changed from mysql_fetch_row($rs) to mysql_fetch_assoc($rs).  Not sure how to use row['dateTime'] for every element.
+	while($row = mysql_fetch_assoc($rs)){
 
 		foreach ($row as $element){
 

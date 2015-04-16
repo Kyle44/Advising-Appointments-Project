@@ -1,11 +1,10 @@
+<?php
 // File: StudentViewApts.php
 // Author: KyleFritz
 // Date Created: 4/11/2015
 // Last Modified: 4/15/2015
 // Description: This page will only come up if the last page was StudentOptions.php 
 //   and "View Created Appointment" was created.
-
-<?php
 session_start();
 
 include('Proj2Head.html');
@@ -26,13 +25,13 @@ else{
 	$debug = false;
 	$COMMON = new Common($debug);
 	// Select the ENTIRE ROW for appointments from the database Advising_Appointments2 where the student's Id occurs
-	$sql = "SELECT * FROM `Advising_Appointments2` WHERE `studentId` LIKE '$studentId'";
+	$sql = "SELECT * FROM `Advising_Appointments2` WHERE `studentId` = '$studentId'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 	
 
 
 	// set the default timezone to use.
-	date_default_timezone_set('EST');
+	//date_default_timezone_set('EST');
 	// Not sure if this works, but I believe this will give me the date and time of right now. Changed h:i:s to H:i:s.
 	$dateAndTime = date('Y-m-d H:i:s');
 
@@ -78,13 +77,13 @@ else{
 
 	// for loop for past appointment's Advising info. 
 	foreach($pastRowArray as $element){
-
-		$sql = "SELECT * FROM `Advising_Info2` WHERE `employeeId` LIKE '$element['advisorId']'";
+		$advisorId = $element['advisorId'];
+		$sql = "SELECT * FROM `Advisor_Info2` WHERE `employeeId` = '$advisorId'";//changed this line!!!
 		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 		// row is all of the info for this advisor
 		$row = mysql_fetch_assoc($rs);
 		// Every row is pushed onto the advisorInfoArray.
-		push_array($pastAdvisorInfoArray, $row);
+		array_push($pastAdvisorInfoArray, $row);
 	}
 
 	
@@ -116,23 +115,24 @@ else{
 
 	
 	foreach($upcomingRowArray as $element){
+		$advisorId = $element['advisorId'];
 
-		$sql = "SELECT * FROM `Advising_Info2` WHERE `employeeId` LIKE '$element['advisorId']'";
+		$sql = "SELECT * FROM `Advisor_Info2` WHERE `employeeId` = '$advisorId'";//////changed this line!!!
 		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 		// row is all of the info for this advisor
 		$row = mysql_fetch_assoc($rs);
 		// Every row is pushed onto the advisorInfoArray.
-		push_array($upcomingAdvisorInfoArray, $row);
+		array_push($upcomingAdvisorInfoArray, $row);
 	}
 
 
 
 
-	echo "Upcoming Appointments<br>";
+	echo "Upcoming Appointments:<br>";
 	for($j = 0; $j < $upcomingAptsLen; $j++){
 		echo $upcomingApts[$j];
 		echo "<br>";
-		echo $upcomingAdvisorInfoArray[$j];
+		echo $upcomingAdvisorInfoArray['$j'];
 	} // end for loop
 	
 } // End of big else statement
@@ -140,20 +140,24 @@ else{
 ?>
 
 
-
 	<!--  THE BUTTONS "Go Back" and "Done".  -->
 
-	<!-- Post method to go to StudentOptions.php.  Name means StudentViewApts.php (this page) to StudentOptions.php  -->
-	<form action='StudentOptions.php' method='post' name='SVAtoSOptions'>
-	<!-- Go Back button -->
-	<input type='Go Back'>
+	<!-- action to go to StudentOptions.php.  Name means StudentViewApts.php (this page) to StudentOptions.php  -->
+	<form action='StudentOptions.php' name='SVAtoSOptions'>
+	<!--Go Back button-->
+	<input type='submit' value='Go Back'>
 	<!-- End of form  -->
 	</form>
 
-	<!-- Post method to go to index.php.  Name means StudentViewApts.php (this page) to index.php  -->
-	<form action='index.php' method='post' name='SVAtoINDEX'>
-	<!-- Done button  -->
-	<input type='Done'>
+	<!-- action='index.php to go to index.php.
+	Name means StudentViewApts.php (this page) to index.php
+	 post method is just for sending input data from forms-->
+	
+	<!--you need a new form if the button goes to a different place-->
+	<form action='index.php' name='SVAtoINDEX'>
+	<!--Done button-->
+	<form action='StudentOptions.php' name='SVAtoSTUDENTOPTIONS'>
+	<input type= 'submit' value='Done'>
 	<!-- End of form -->
 	</form>
 

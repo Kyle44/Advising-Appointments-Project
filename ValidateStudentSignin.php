@@ -3,14 +3,7 @@ session_start();
 include('../CommonMethods.php');
 
 
-function withinCurrentWeek($aptTime){
-	//check if greater than this monday, less than this friday
-	$today = date("Y-m-d H:i:s");
-	$thisMonday = date(strtotime("monday this week"));
-	$thisFriday = date(strtotime("friday this week"));
-	return($today >= $thisMonday && $today <= $thisFriday);
-}
-
+//add signin info to session
 $_SESSION['fName'] = trim($_POST['fName']);
 $_SESSION['lName'] = trim($_POST['lName']);
 $_SESSION['major'] = trim($_POST['major']);
@@ -18,6 +11,8 @@ $_SESSION['studentEmail'] = trim($_POST['studentEmail']);
 $_SESSION['studentId'] = trim($_POST['studentId']);
 
 $studentId = $_SESSION['studentId'];
+
+///////////////////////////////Signin error checking///////////////////////
 $_SESSION['signinError'] = false;
 //error checking for blank fields
 if(strlen($_SESSION['fName'])==0 || strlen($_SESSION['lName'])==0
@@ -45,43 +40,32 @@ elseif(strlen($_SESSION['studentId'])!=7 || !ctype_upper(substr($_SESSION['stude
 $_SESSION['signinError'] = true;
 }
 
-
-
+//go back to signin if error was found
 if($_SESSION['signinError'] == true){
  	header('Location: StudentSignin.php');
 }
+//after this point, successful login
 
+
+//now, process signin info to determine which options the student can choose////
 else{
-
-
-//What I need to do, is know if a student is assigned an advisor, or if it's free for all.
-//And also, know the policy for multiple apponitments.
 //I emailed Josh Abrams, and he said the following in response:
 /**
 Only allow one individual appointment per week, doesn't have to be the same advisor
-
-Earliest: 8:30 or 9:00 for individual
-
-Two business days prior to appointment, 1.5 week after
-
+Earliest: 9:00 for individual
+Times can show up: Between Two business days after today and 1 week after today
 Latest day in semester to get an appointment for course registration is Apr 30/ Nov 30
-
-Typically either individual or group appointment
-	Individual shouldn't do group later
-	Group may do individual afterwards, in which case, within one week of the individual appointment is fine
-
-I will figure out the logic for this after I make the options for creating group/individual work out.
-Idea: use the 'BETWEEN' thing?
-
-ex:
-SELECT * FROM Orders
-WHERE OrderDate BETWEEN #07/04/1996# AND #07/09/1996#
-
+Students Typically either do individual or group appointment
+	Individual appointment students shouldn't do group later
+	Group may do individual after group, in which case, within one week of the individual
+		 appointment is fine
 */
 
-	//need to make sure they have an existing apponitment in order to view, cancel, or change
+	//need to make sure they have an existing apponitment in order to cancel or change
+	//to view, a student must have at least one appointment on file, past or present
 	//the disabled attribute in html tag will make it unselectable
 
+	//instantiating common to execute queries
 	$debug = false;
 	$COMMON = new Common($debug);
 
@@ -94,51 +78,55 @@ WHERE OrderDate BETWEEN #07/04/1996# AND #07/09/1996#
 	$sql = "SELECT * FROM `Advisor_Info2`";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 
+	//pushing to advisors array with their id as key
 	while($row = mysql_fetch_assoc($rs)){
-		
 		$flName = $row['fName']." ".$row['lName'];
 		$advisors[$row['employeeId']] = $flName;
 	}
 	$_SESSION['advisors'] = $advisors;	
 
-	//var_dump($_SESSION['advisors']);
 
-	
-	//prevalidation to make only certain options available for the studetnt to choose on the next page.
-
-	//check if student already has group appt
 	$_SESSION['groupEnabled'] = true;
 	$_SESSION['indEnabled'] = true;
 	$_SESSION['currentWeekEnabled'] = true;
 	$_SESSION['studentHasUpcomingAppointment'] = false;
+	$_SESSION['viewEnabled'] = false;
+
+	
+	//student can view created apt if at least one instance of their id is in Advisng_Appointments2
+	$sql = "SELECT * FROM Advising_Appointments2 WHERE `studentId` = '$studentId'";
+	$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
+	$row = mysql_fetch_assoc($rs);
+	if(!empty($row)){
+		$_SESSION['viewEnabled'] = true;
+	}	 
+
 	//this moment, now
 	$now = date("Y-m-d H:i:s");
 
 	$sql = "SELECT * FROM Advising_Appointments2 WHERE `studentId` = '$studentId' AND `advisorId` = 'GROUPAP'";
-
 	$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
 	$row = mysql_fetch_assoc($rs);
-	//var_dump($row);
-	//in alg where check if exists 
-	if(!empty($row)){
+	
+	//at least one group appointment 
+	if(!empty($row)){		
 		
+		//disable option to sign up for group
 		$_SESSION['groupEnabled'] = false;
-		
 		$groupEndTime = date("Y-m-d H:i:s",strtotime('+30 minutes',strtotime($row['dateTime'])));
-		//checking if now is before the group appointment (there will only be one)
-		//echo "$now<br>";
-		//echo "$groupEndTime<br>";
+		//checking if now is before the group appointment (there should only be one)
+
 		if($now < $groupEndTime){
+			//disable option to sign up for individual
 			$_SESSION['indEnabled'] = false;
-			//echo "dude<br>";
 			$_SESSION['studentHasUpcomingAppointment'] = true;
 		}
 	}
 
-///////////test: make future group appointment, expected result is ind will be unavail
-	///////success
+
 	//checking if they can sign up for individual
-		
+	
+	//echo"$studentId<br>";	
 	$sql = "SELECT * FROM Advising_Appointments2 WHERE `studentId` = '$studentId' AND `advisorId` != 'GROUPAP'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
 
@@ -149,43 +137,39 @@ WHERE OrderDate BETWEEN #07/04/1996# AND #07/09/1996#
 	}
 
 	//var_dump($indApps);
-	if(!empty($indApps)){///////////////////////////////dont do empty
+	if(!empty($indApps)){
+		
+		//getting the latest ind apt the student signed up for
 		$latestApt = $indApps[0];
-		//echo "$latestApt<br>";
 		foreach($indApps as $apt){
 			if($apt['dateTime'] > $latestApt['dateTime']){
 				$latestApt = $apt;
 			}
 		}
 		//now, $latestApt is the latest ind apt the student signed up for
+		//end of half-hour session, in sql format
 		$latestIndAptEndTime = date("Y-m-d H:i:s", strtotime('+30 minutes', strtotime($latestApt['dateTime'])));
 	}
-	//echo "latest: $latestIndAptEndTime<br>";
-	//echo "now: $now<br>";
 
 	if($latestIndAptEndTime > $now){
+		//don't allow student to sign up for anything if they haven't attended
+		//their latest appointment yet
 		$_SESSION['indEnabled'] = false;
-		//$_SESSION['currentWeekEnabled']
 		$_SESSION['groupEnabled'] = false;
 		$_SESSION['studentHasUpcomingAppointment'] = true;
 	}
 
 
-	$thisMonday = date("Y-m-d H:i:s",strtotime("last monday",strtotime($latestIndAptEndTime)));
-	//////////////////////////here, monday. need this week////////////////////////
-	$thisSaturday = date("Y-m-d H:i:s",strtotime("saturday this week"));
-	//echo "dis mon $thisMonday<br>";
-	//echo "dis fri $thisSaturday<br>";//want the day of friday to be valid
-	//echo "latest: $latestIndAptEndTime<br>";
+	//don't let student sign up for another ind apt within same week
+	//starts off as true, so this is the only way the current week can be disabled
+	$thisMonday = date("Y-m-d H:i:s",strtotime("monday this week",strtotime($latestIndAptEndTime)));
+	$thisSaturday = date("Y-m-d H:i:s",strtotime("saturday"));
 	if($latestIndAptEndTime > $thisMonday && $latestIndAptEndTime < $thisSaturday){
-		//need to make this function
-		//echo "bruh<br>";
-			$_SESSION['currentWeekEnabled'] = false;			
-		
+		$_SESSION['currentWeekEnabled'] = false;			
 	}
-	////////////////////////current week is messed up//////////////////////////////
-
-	//variables to test: groupEnabled, indEnabled, currentWeekEnabled
+	
+	//for testing
+	//variables to test: groupEnabled, indEnabled,viewEnabled, currentWeekEnabled
 	/**********************
 		if($_SESSION['groupEnabled']){
 			echo "group is enabled<br>";
@@ -199,6 +183,12 @@ WHERE OrderDate BETWEEN #07/04/1996# AND #07/09/1996#
 		}
 		else{
 			echo "ind is diabled<br>";
+		}
+		if($_SESSION['viewEnabled']){
+			echo "view enabled<br>";
+		}
+		else{
+			echo "view disabled<br>";
 		}
 
 		if($_SESSION['currentWeekEnabled']){

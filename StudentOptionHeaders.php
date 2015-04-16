@@ -1,9 +1,19 @@
 <?php
 session_start();
 
+/*
+Name: Nathaniel Baylon
+Date:03/21/2015
+Class: CMSC331
+Project:Advisor Time Selection
+File: StudentOptionHeaders.php
+File Description: 
+This file directs the student to the correct page,depending on their choice.
+*/
+
 $studentsDecision = $_POST['rb_option'];
 $indAdvisor = $_POST['sel_advisor'];
-$_SESSION['studentAction'] = $theDecision;
+$_SESSION['studentAction'] = $studentsDecision;
 
 if($studentsDecision == 'createGroupAppointment'){
 	$_SESSION['studentsAdvisor'] = 'GROUPAP';
@@ -17,11 +27,11 @@ elseif($studentsDecision == 'createIndividualAppointment'){
 }
 
 elseif($studentsDecision == 'viewAppointment'){
-	header('Location: StudentViewAppointment.php');
+	header('Location: StudentViewApts.php');//changed from StudentViewAppointments
 }
 
 elseif($studentsDecision == 'cancelAppointment'){
-	header('Location: StudentViewAppointment.php');
+	header('Location: StudentCancelAppointment.php');
 }
 
 elseif($studentsDecision == 'changeAppointment'){

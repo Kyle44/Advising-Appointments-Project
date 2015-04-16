@@ -39,44 +39,100 @@ else{
 	// Create two arrays, one for past appointments (ones that have already occurred) and one for upcoming appointments.
 	$pastApts = array();
 	$upcomingApts = array();
+	// Used later
+	$pastRowArray = array();
+	$upcomingRowArray = array();
 
+	
 
 	// changed from mysql_fetch_row($rs) to mysql_fetch_assoc($rs).  Not sure how to use row['dateTime'] for every element.
 	while($row = mysql_fetch_assoc($rs)){
 
-		foreach ($row as $element){
 
-			// Not sure how to do this exactly, but what I want is: if dateTime variable is before now, then it is a past appointment.
-			//   I believe the dateTime variable is now in $element, but I don't know if I can compare it with $dateAndTime
-			if($element < $dateAndTime){
+			// Array of rows
+			
+
+
+			// if row['dateTime'] is before right now, put this in $pastApts array
+			if($row['dateTime'] < $dateAndTime){
 				// Trying to push the date and time onto $pastApts array
-				array_push($pastApts, $element);
+				array_push($pastApts, $row['dateTime']);
+				// Each row here is sent to $pastRowArray
+				array_push($pastRowArray, $row);
 			} // end if statement
 			
 			else{
 				// Trying to push the date and time onto $upcomingApts array
-				array_push($upcomingApts, $element);
+				array_push($upcomingApts, $row['dateTime']);
+				// Upcoming array info
+				array_push($upcomingRowArray, $row);	
 			} // end else statement
-		} // end for loop
+	
 	} // end of while loop
 	
+
+
+	// All data for advisors in past appointments
+	$pastAdvisorInfoArray = array();
+
+
+	// for loop for past appointment's Advising info. 
+	foreach($pastRowArray as $element){
+
+		$sql = "SELECT * FROM `Advising_Info2` WHERE `employeeId` LIKE '$element['advisorId']'";
+		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+		// row is all of the info for this advisor
+		$row = mysql_fetch_assoc($rs);
+		// Every row is pushed onto the advisorInfoArray.
+		push_array($pastAdvisorInfoArray, $row);
+	}
+
+	
+
 
 	// Count length of both arrays so for loops later can work
 	$pastAptsLen = count($pastApts);
 	$upcomingAptsLen = count($upcomingApts);
+	
 
 	// Output for times of Past/Upcoming Appointments
 	echo "Past Appointments: <br>";
 	// For loop for $pastApts
-	for($i = 0; $i < $pastAptsLen; $x++){
-		echo $pastApts[$x];
+
+	///////////////////////////******************************///////////////
+	foreach($pastAdvisorInfoArray as $row)
+
+	for($i = 0; $i < $pastAptsLen; $i++){
+		echo $pastApts[$i];
 		echo "<br>";
+		// 
+		echo $pastAdvisorInfoArray[$j];
 	} // end for loop
 	
+
+
+	// All data for advisors in upcoming appointments
+	$upcomingAdvisorInfoArray = array();
+
+	
+	foreach($upcomingRowArray as $element){
+
+		$sql = "SELECT * FROM `Advising_Info2` WHERE `employeeId` LIKE '$element['advisorId']'";
+		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+		// row is all of the info for this advisor
+		$row = mysql_fetch_assoc($rs);
+		// Every row is pushed onto the advisorInfoArray.
+		push_array($upcomingAdvisorInfoArray, $row);
+	}
+
+
+
+
 	echo "Upcoming Appointments<br>";
-	for($j = 0; $j < $upcomingAptsLen; $x++){
-		echo $upcomingApts[$x];
+	for($j = 0; $j < $upcomingAptsLen; $j++){
+		echo $upcomingApts[$j];
 		echo "<br>";
+		echo $upcomingAdvisorInfoArray[$j];
 	} // end for loop
 	
 } // End of big else statement

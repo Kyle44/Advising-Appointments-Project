@@ -19,15 +19,13 @@ $studentId = $_SESSION['studentId'];
 $advisors = $_SESSION['advisors'];
 $groupEnabled = $_SESSION['groupEnabled'];
 $indEnabled = $_SESSION['indEnabled'];
-
-
 $hasUpcomingAppointment = $_SESSION['studentHasUpcomingAppointment'];
 
 //var_dump($_SESSION['advisors']);
 ?>
 
 <!--Output-->
-Choose an option:<br>
+Please choose an option:<br><br>
 <form action = 'StudentOptionHeaders.php' method = 'post' name = 'selectOption'>
 <input type = 'radio' name = 'rb_option' value = 'createGroupAppointment' 
 <?php 
@@ -40,15 +38,15 @@ elseif($_SESSION['studentChoice'] == 'createGroupAppointment' ||
 echo 'checked';
 }
 ?> >Create Group Appointment<br>
-
 <input type = 'radio' name = 'rb_option' value = 'createIndividualAppointment' 
 <?php if(!$indEnabled){
 echo 'disabled';
 }
-elseif($_SESSION['studentChoice'] == 'createIndividualAppointment'){
+
+//checked if group disabled
+elseif($_SESSION['studentChoice'] == 'createIndividualAppointment'||!$groupEnabled){
 echo ' checked';
 }
-
 
 ?> >Create Individual Appointment<br>
 Advisor:
@@ -68,16 +66,16 @@ foreach($advisors as $advisorId=>$advisorName){
 	}
 	echo "$advisorName</option>";
 }
-echo "</select><br>";
+echo "</select><br><br>";
 ?>
-<br>
-
 
 <input type = 'radio' name = 'rb_option' value = 'viewAppointment'
 <?php if(!$_SESSION['viewEnabled']){
 echo "disabled";
 }
-elseif($_SESSION['studentChoice'] == 'viewAppointment' || empty($_SESSION['studentChoice'])){
+
+//checked if previous 2 are disabled
+elseif($_SESSION['studentChoice'] == 'viewAppointment' || (!$groupEnabled && !$indEnabled)){
 echo " checked";
 }
 ?> >View Created Appointment<br>
@@ -88,6 +86,7 @@ echo " checked";
 <?php if(!$hasUpcomingAppointment){
 echo "disabled";
 }
+//checked if previous 3 are disabled
 elseif($_SESSION['studentChoice'] == 'cancelAppointment'){
 echo "checked";
 }
@@ -96,19 +95,22 @@ echo "checked";
 
 
 <input type = 'radio' name = 'rb_option' value = 'changeAppointment'
-<?php if(!$hasExistingAppointment){
+<?php if(!$hasUpcomingAppointment){
 echo "disabled";
 } 
+
+//cancel and change will always be enabled/disabled at the same time, so 
+//only check if this was the student's option (coming from a later page)
 elseif($_SESSION['studentChoice'] == 'changeAppointment'){
 echo "checked";
 }
 ?> >Change Created Appointment<br>
 
-
-
+<!--submit button-->
 <input type = 'submit' value = 'Next'>
 </form>
 
+<!--go back button-->
 <form action = 'index.php' name = 'goback'>
 <input type='submit' value = 'Sign Out'>
 </form>

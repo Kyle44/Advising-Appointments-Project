@@ -10,7 +10,7 @@ session_start();
 include('Proj2Head.html');
 include('../CommonMethods.php');
 
-
+$fName = $_SESSION['fName'];
 
 // Make sure we're coming from the right page
 if($_SESSION['lastPage'] != "StudentOptions.php"){
@@ -34,7 +34,8 @@ else{
 	//date_default_timezone_set('EST');
 	// Not sure if this works, but I believe this will give me the date and time of right now. Changed h:i:s to H:i:s.
 	$dateAndTime = date('Y-m-d H:i:s');
-
+	$today = date('l, m/d/Y, g:i A');
+	
 	// Create two arrays, one for past appointments (ones that have already occurred) and one for upcoming appointments.
 	$pastApts = array();
 	$upcomingApts = array();
@@ -46,8 +47,6 @@ else{
 
 	// changed from mysql_fetch_row($rs) to mysql_fetch_assoc($rs).  Not sure how to use row['dateTime'] for every element.
 	while($row = mysql_fetch_assoc($rs)){
-
-
 			// Array of rows
 			
 
@@ -93,8 +92,10 @@ else{
 	$pastAptsLen = count($pastApts);
 	$upcomingAptsLen = count($upcomingApts);
 	
-
+	
 	// Output for times of Past/Upcoming Appointments
+	
+	echo "$fName, here are the appointmnets you have created this semester. Today is $today<br><br>";
 	echo "Past Appointments: <br>";
 	// For loop for $pastApts
 
@@ -102,12 +103,21 @@ else{
 	foreach($pastAdvisorInfoArray as $row)
 
 	for($i = 0; $i < $pastAptsLen; $i++){
-		echo $pastApts[$i];
+		$sqlFormatTime = $pastApts[$i];
+		$studentFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
+		echo $studentFormatTime;
+		$advisorfName = $pastAdvisorInfoArray[$i]['fName'];
+		$advisorlName = $pastAdvisorInfoArray[$i]['lName'];
+		$advisorEmail = $pastAdvisorInfoArray[$i]['advisorEmail'];
+		$advisorPhoneNumber = $pastAdvisorInfoArray[$i]['advisorPhoneNumber'];
+		$advisorRoomNumber = $pastAdvisorInfoArray[$i]['advisorRoomNumber'];
+		echo " ".$advisorfName." ".$advisorlName.": ";
+		echo "email: $advisorEmail, ";
+		echo "phone: $advisorPhoneNumber, ";
+		echo "room: $advisorRoomNumber";
 		echo "<br>";
-		// 
-		echo $pastAdvisorInfoArray[$j];
 	} // end for loop
-	
+	echo "<br>";
 
 
 	// All data for advisors in upcoming appointments
@@ -127,13 +137,25 @@ else{
 
 
 
-
+	 
 	echo "Upcoming Appointments:<br>";
 	for($j = 0; $j < $upcomingAptsLen; $j++){
-		echo $upcomingApts[$j];
+		$sqlFormatTime = $upcomingApts[$j];
+		$userFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
+		echo $userFormatTime;
+		
+		$advisorfName = $upcomingAdvisorInfoArray[$j]['fName'];
+		$advisorlName = $upcomingAdvisorInfoArray[$j]['lName'];
+		$advisorEmail = $upcomingAdvisorInfoArray[$j]['advisorEmail'];
+		$advisorPhoneNumber = $upcomingAdvisorInfoArray[$j]['advisorPhoneNumber'];
+		$advisorRoomNumber = $upcomingAdvisorInfoArray[$j]['advisorRoomNumber'];
+		echo " ".$advisorfName." ".$advisorlName.": ";
+		echo "email: $advisorEmail, ";
+		echo "phone: $advisorPhoneNumber, ";
+		echo "room: $advisorRoomNumber";
 		echo "<br>";
-		echo $upcomingAdvisorInfoArray['$j'];
 	} // end for loop
+echo "<br>";
 	
 } // End of big else statement
 
@@ -141,7 +163,6 @@ else{
 
 
 	<!--  THE BUTTONS "Go Back" and "Done".  -->
-
 	<!-- action to go to StudentOptions.php.  Name means StudentViewApts.php (this page) to StudentOptions.php  -->
 	<form action='StudentOptions.php' name='SVAtoSOptions'>
 	<!--Go Back button-->

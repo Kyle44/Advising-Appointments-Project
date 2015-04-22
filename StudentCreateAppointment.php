@@ -1,28 +1,30 @@
 <?php
-session_start();
 
 /*
-Name: Nathaniel Baylon
-Date:03/21/2015
+Name: Nathaniel Baylon, Tommy Tran, Kyle Fritz
+Date: 03/29/2015
 Class: CMSC331
-Project:Advisor Time Selection
-File: StudentCreateAppointmnet.php
-File Description: 
-In this file, a student chooses a radio button for the day they want to sign up
+Project: Project 2
+File: StudentCreateAppointment.php
+File Description: In this file, a student chooses a radio button for the day they want to sign up
 for, and selects a time from a select box on that same line. Times only show up
 within 2 business days to a week after that if the current week is enabled, or 
 next monday through the following monday if current week is disabled. If day has 
 no availabilities, the student cannot select it. 
 */
 
+session_start();
 include ('Proj2Head.html');
 include('../CommonMethods.php');
 
-$advisorId = $_SESSION['studentsAdvisor'];
+$advisorId = $_SESSION['studentsCreateAdvisor'];
+//echo "$advisorId<br>";
 $advisorName = $_SESSION['advisors'][$advisorId];
 //var_dump($_SESSION['studentsAdvisor']);
 //echo "$advisorId<br>";
 $fName = $_SESSION['fName'];
+
+echo "<div class='form-div'>";
 
 //defining date range the student can select from
 //today's day of week
@@ -149,7 +151,7 @@ foreach($allPotentialAppointmentArray as $row){
 	
 	//first day is selected by default
 	$previousButton = False;
-	echo "<form action = 'StudentAreYouSure.php' method = 'post'>";
+	echo "<form action = 'StudentInsertDB.php' method = 'post'>";
 	foreach($outputArray as $userDay=>$times){
 		//at least one real time in that day
 		if(sizeof($times) > 1){
@@ -196,11 +198,12 @@ if(empty($availableAppointmentArray)){
 	}
 }
 ?>
-<input type = 'submit' value = 'Next'<?php if($disableNext){echo "hidden";}?> >
+<div class="button"><input type='submit' value = 'Create Appointment'<?php if($disableNext){echo "hidden";}?> ></div>
 	</form>
 <form action='StudentOptions.php'>
-	<input type = 'submit' value='Go Back'>
+<div class="button"><input type='submit' value='Go Back'></div>
 </form>
+</div>
 
 <?php
 $_SESSION['lastPage'] = 'StudentCreateAppointment.php';

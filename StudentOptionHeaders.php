@@ -2,39 +2,50 @@
 session_start();
 
 /*
-Name: Nathaniel Baylon
-Date:03/21/2015
+Name: Nathaniel Baylon, Tommy Tran, Kyle Fritz
+Date: 03/29/2015
 Class: CMSC331
-Project:Advisor Time Selection
-File: StudentOptionHeaders.php
-File Description: 
-This file directs the student to the correct page,depending on their choice.
+Project: Project 2
+File: StudentInsertDB.php
+File Description: This file directs the student to the correct page,depending on their choice.
 */
 
-$studentsDecision = $_POST['rb_option'];
-$indAdvisor = $_POST['sel_advisor'];
-$_SESSION['studentAction'] = $studentsDecision;
+$studentsChoice = $_POST['rb_option'];
+$createAdvisor = $_POST['sel_createAdvisor'];
+$changeAdvisor = $_POST['sel_changeAdvisor'];
+$_SESSION['studentChoice'] = $studentsChoice;
 
-if($studentsDecision == 'createGroupAppointment'){
-	$_SESSION['studentsAdvisor'] = 'GROUPAP';
+if($studentsChoice == 'createGroupAppointment'){
+	$_SESSION['studentsCreateAdvisor'] = 'GROUPAP';
 	header('Location: StudentCreateAppointment.php');
 }
 
-elseif($studentsDecision == 'createIndividualAppointment'){
+elseif($studentsChoice == 'createIndividualAppointment'){
 	//from the advisor selection dropdown
-	$_SESSION['studentsAdvisor'] = $indAdvisor;
+	$_SESSION['studentsCreateAdvisor'] = $createAdvisor;
 	header('Location: StudentCreateAppointment.php');
 }
 
-elseif($studentsDecision == 'viewAppointment'){
-	header('Location: StudentViewApts.php');//changed from StudentViewAppointments
+if($studentsChoice == 'changeToGroupAppointment'){
+	$_SESSION['studentsChangeAdvisor'] = 'GROUPAP';
+	header('Location: StudentChangeAppointment.php');
 }
 
-elseif($studentsDecision == 'cancelAppointment'){
-	header('Location: StudentCancelAppointment.php');
+elseif($studentsChoice == 'changeToIndividualAppointment'){
+	//from the advisor selection dropdown
+	$_SESSION['studentsChangeAdvisor'] = $changeAdvisor;
+	header('Location: StudentChangeAppointment.php');
 }
 
-elseif($studentsDecision == 'changeAppointment'){
+elseif($studentsChoice == 'viewAppointment'){
+	header('Location: StudentViewApts.php');
+}
+
+elseif($studentsChoice == 'cancelAppointment'){
+	header('Location: StudentDeleteAppointment.php');
+}
+
+elseif($studentsChoice == 'changeAppointment'){
 	header('Location: StudentChangeAppointment.php');
 }
 

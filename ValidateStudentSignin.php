@@ -1,7 +1,41 @@
 <?php
-session_start();
-include('../CommonMethods.php');
 
+/*
+Name: Nathaniel Baylon, Tommy Tran, Kyle Fritz
+Date: 03/29/2015
+Class: CMSC331
+Project: Project 2
+File: ValidateAdvisorSignin.php
+File Description: Validation for student signin
+*/
+
+session_start();
+include('CommonMethods.php');
+
+//returns in sql format
+function minusTwoBusinessDays($day){
+	//echo"Day input: $day<br>";
+	$dayMinusTwoDOW = date('l',strtotime('-2 days', strtotime($day)));
+	//echo "$dayMinusTwoDOW";
+	$dayMinusTwo = date('Y-m-d H:i:s', strtotime('-2 days', strtotime($day)));
+	//echo "$dayMinusTwo<br>";
+	//Day minus 2 is called from a business day that returns another business day
+	if($dayMinusTwoDOW == 'Monday' ||$dayMinusTwoDOW == 'Tuesday' ||$dayMinusTwoDOW == 'Wednesday'){
+		return($dayMinusTwo);
+	}
+	//day minus 2 is Sunday (called from a Tuesday)
+	else if($dayMinusTwoDOW == 'Sunday' || $dayMinusTwoDOW == 'Saturday'){
+		return(date('Y-m-d H:i:s', strtotime('-4 days',strtotime($day))));
+	}
+	//day minus 2 is Friday (called from a Sunday)
+	else if($dayMinusTwoDOW == 'Friday'){
+		return (date('Y-m-d H:i:s', strtotime('-3 days', strtotime($day))));
+	}
+	//day minus 2 is Thursday (called from a saturday)
+	else{
+		return ($dayMinusTwo);
+	}
+}
 
 //add signin info to session
 $_SESSION['fName'] = trim($_POST['fName']);
@@ -11,6 +45,12 @@ $_SESSION['studentEmail'] = trim($_POST['studentEmail']);
 $_SESSION['studentId'] = trim($_POST['studentId']);
 
 $studentId = $_SESSION['studentId'];
+
+
+
+
+
+
 
 ///////////////////////////////Signin error checking///////////////////////
 $_SESSION['signinError'] = false;
@@ -91,19 +131,33 @@ Students Typically either do individual or group appointment
 	$_SESSION['currentWeekEnabled'] = true;
 	$_SESSION['studentHasUpcomingAppointment'] = false;
 	$_SESSION['viewEnabled'] = false;
-
-	
-	//student can view created apt if at least one instance of their id is in Advisng_Appointments2
-	$sql = "SELECT * FROM Advising_Appointments2 WHERE `studentId` = '$studentId'";
-	$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
-	$row = mysql_fetch_assoc($rs);
-	if(!empty($row)){
-		$_SESSION['viewEnabled'] = true;
-	}	 
+	$_SESSION['studentHasPastAppointment'] = false;
+	$_SESSION['upcomingWithinDay'] = false;	
 
 	//this moment, now
 	$now = date("Y-m-d H:i:s");
 
+	//student can view created apt if at least one instance of their id is in Advisng_Appointments2
+	//Also, checking here what the student chan change their appointment to (if they have one)
+	$sql = "SELECT * FROM Advising_Appointments2 WHERE `studentId` = '$studentId'";
+	$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
+	while($row = mysql_fetch_assoc($rs)){
+		//at this point, the student has a past/upcoming appointment
+		//so they have something they can view
+		$_SESSION['viewEnabled'] = true;
+		
+		//if they have a past appointment, the student will only be able to change
+		//to individual (past true)
+		//otherwise, they can change to any type of appointment (past false)
+		//echo $row['dateTime']."<br>";
+		//echo $now."<br>";
+		if($row['dateTime'] < $now){
+			$_SESSION['studentHasPastAppointment'] = true;
+			//if they have a past appointment, they're not allowed to do group
+			$_SESSION['groupEnabled'] = false;
+		}
+				 
+	}
 	$sql = "SELECT * FROM Advising_Appointments2 WHERE `studentId` = '$studentId' AND `advisorId` = 'GROUPAP'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
 	$row = mysql_fetch_assoc($rs);
@@ -115,11 +169,22 @@ Students Typically either do individual or group appointment
 		$_SESSION['groupEnabled'] = false;
 		$groupEndTime = date("Y-m-d H:i:s",strtotime('+30 minutes',strtotime($row['dateTime'])));
 		//checking if now is before the group appointment (there should only be one)
-
+		//echo"$groupEndTime<br>";
+		//echo"$now<br>";
 		if($now < $groupEndTime){
 			//disable option to sign up for individual
 			$_SESSION['indEnabled'] = false;
+			//echo"should have upcoming<br>";
 			$_SESSION['studentHasUpcomingAppointment'] = true;
+			//$_SESSION['upcomingAppointment'] = $groupEndTime;
+			//must be 2 days, otherwise, they might try to change their appointment
+			//and then realize they can't sign up for any times within 2 days
+			$groupEndMinusDay = date('Y-m-d H:i:s', strtotime(minusTwoBusinessDays(groupEndMinusDay)));
+			if($groupEndMinusDay < $now){
+				$_SESSION['upcomingWithinDay'] = true;
+				//echo "$groupEndMinusDay $now<br>";
+				//echo "hello<br>";
+			}
 		}
 	}
 
@@ -156,7 +221,20 @@ Students Typically either do individual or group appointment
 		//their latest appointment yet
 		$_SESSION['indEnabled'] = false;
 		$_SESSION['groupEnabled'] = false;
+		//$_SESSION['upcomingAppointment'] = $latestIndAptEndTime;
 		$_SESSION['studentHasUpcomingAppointment'] = true;
+		//echo"$latestIndAptEndTime<br>";
+		$indEndMinusDay = date("Y-m-d H:i:s", strtotime(minusTwoBusinessDays($latestIndAptEndTime)));
+		//echo"$latestIndAptEndTime<br>";
+		//echo"indendminusDay: $indEndMinusDay<br>";
+		///////////////to do: HasUpcoming shouldn't be end time,
+		///////////////       make some options booleans better 
+		//echo "$indEndMinusDay<br>";	
+		if($indEndMinusDay < $now){
+				//echo "$indEndMinusDay $now<br>";
+	
+				$_SESSION['upcomingWithinDay'] = true;
+			}
 	}
 
 
@@ -190,7 +268,24 @@ Students Typically either do individual or group appointment
 		else{
 			echo "view disabled<br>";
 		}
-
+		if($_SESSION['studentHasUpcomingAppointment']){
+			echo "has upcoming<br>";
+		}
+		else{
+			echo "does not have upcoming<br>";
+		}
+		if($_SESSION['studentHasPastAppointment']){
+			echo"does have past appointment<br>";
+		}
+		else{
+			echo"does not have past appointment<br>";
+		}
+		if($_SESSION['upcomingWithinDay']){
+			echo "upcoming appointment within two days<br>";
+		}
+		else{
+			echo "upcoming appointment not within two days<br>";
+		}
 		if($_SESSION['currentWeekEnabled']){
 			echo "current week is enabled<br>";
 		}
@@ -199,6 +294,7 @@ Students Typically either do individual or group appointment
 		}
 
 	**********************/
+	$_SESSION['lastPage'] = 'ValidateStudentSignin.php';
 	header('Location: StudentOptions.php');	
 }//end else
 

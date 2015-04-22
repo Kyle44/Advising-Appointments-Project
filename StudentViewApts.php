@@ -1,16 +1,22 @@
 <?php
-// File: StudentViewApts.php
-// Author: KyleFritz
-// Date Created: 4/11/2015
-// Last Modified: 4/15/2015
-// Description: This page will only come up if the last page was StudentOptions.php 
-//   and "View Created Appointment" was created.
-session_start();
 
+/*
+Name: Nathaniel Baylon, Tommy Tran, Kyle Fritz
+Date: 03/29/2015
+Class: CMSC331
+Project: Project 2
+File: StudentViewApts.php
+File Description: This page will only come up if the last page was StudentOptions.php 
+and "View Created Appointment" was created.
+*/
+
+session_start();
 include('Proj2Head.html');
-include('../CommonMethods.php');
+include('CommonMethods.php');
 
 $fName = $_SESSION['fName'];
+
+echo "<div class='form-div'>";
 
 // Make sure we're coming from the right page
 if($_SESSION['lastPage'] != "StudentOptions.php"){
@@ -96,7 +102,9 @@ else{
 	// Output for times of Past/Upcoming Appointments
 	
 	echo "$fName, here are the appointmnets you have created this semester. Today is $today<br><br>";
-	echo "Past Appointments: <br>";
+	if($pastAptsLen>0){
+		echo "Past Appointments: <br>";
+	}
 	// For loop for $pastApts
 
 	///////////////////////////******************************///////////////
@@ -137,8 +145,9 @@ else{
 
 
 
-	 
-	echo "Upcoming Appointments:<br>";
+	if($upcomingAptsLen > 0){	 
+		echo "Upcoming Appointments:<br>";
+	}
 	for($j = 0; $j < $upcomingAptsLen; $j++){
 		$sqlFormatTime = $upcomingApts[$j];
 		$userFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
@@ -166,7 +175,7 @@ echo "<br>";
 	<!-- action to go to StudentOptions.php.  Name means StudentViewApts.php (this page) to StudentOptions.php  -->
 	<form action='StudentOptions.php' name='SVAtoSOptions'>
 	<!--Go Back button-->
-	<input type='submit' value='Go Back'>
+	<div class="button"><input type='submit' value='Go Back'></div>
 	<!-- End of form  -->
 	</form>
 
@@ -178,12 +187,10 @@ echo "<br>";
 	<form action='index.php' name='SVAtoINDEX'>
 	<!--Done button-->
 	<form action='StudentOptions.php' name='SVAtoSTUDENTOPTIONS'>
-	<input type= 'submit' value='Done'>
+	<div class="button"><input type= 'submit' value='Done'></div>
 	<!-- End of form -->
 	</form>
-
-
-
+</div>
 <?php
 	// Make last page equal this page.
   	$_SESSION['lastPage'] = "StudentViewApts.php";

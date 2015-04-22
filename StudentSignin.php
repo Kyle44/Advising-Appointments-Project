@@ -1,70 +1,77 @@
-<?php
-session_start();
-
-/*
+<html>
+	<head>
+<!--
 Name: Nathaniel Baylon
 Date:03/29/2015
 Class: CMSC331
-Project:Advisor Time Selection
-File: StudentSignin.php
-File Description: In this page, the student gives all their necessary information (signs in) 
-*/
-include('Proj2Head.html');
+Project:Project 2
 
+File: Proj2Head.html
+File Description: This file contains the head that will be included throughout the
+				  project. The head has the CSS selectors for styling, and the UMBC 
+				  logo appears as the first element displayed on each page.
+-->
 
-//info format user enters is checked in StudentOptions.php
-//if Student goes back from here, signin error will be unset
-if($_SESSION['signinError'] == true){
-	$signinError=true;
-	$fName = $_SESSION['fName'];
-	$lName = $_SESSION['lName'];
-	$major = $_SESSION['major'];
-	$studentId = $_SESSION['studentId'];
-	$studentEmail = $_SESSION['studentEmail'];
-}
-else{
-	$signinError = false;//
-}
+<title>Advising Scheduling</title>
+<link rel="icon" type="image/png" href="http://sites.umbc.edu/wp-content/themes/umbc/assets/images/icon.png" />
+<link rel="stylesheet" type="text/css" href="css/stylesheet.css"/>
+</head>
+<body>
+<div class="one-third-header"></div>
+<div class="two-third-header">
+<img class="logo" src="picture/Logo.png" alt="UMBC Advising">
+</div>
+<div class="three-third-header"></div>
+<div class="background">
+<div class="one-third-background"></div>
+<div class="two-third-background"></div>
+<div class="three-third-background"></div>
+</div>
+<!--rest of php/html code below, /body and /html in Proj2Tail.html-->
 
-
-?>
 
 <!--output-->
-Student Signin<br>
+<div class="form-div">
+<div class="form-title">Student Signin<br></div>
 <form action='ValidateStudentSignin.php' method='post' name='login'>
-
-	First Name: 	<input type='text' name='fName' <?php echo "value='$fName'"?>><br>
-  	Last Name:  	<input type='text' name='lName' <?php echo "value='$lName'"?>><br>
-  	Major:	 		<font color='white'>OO..</font><select name='major'>
+<div class="form">
+	First Name: 	<input type='text' name='fName' value=''><br>
+</div>
+<div class="form">  	
+	Last Name:  	<input type='text' name='lName' value=''><br>
+</div>
+<div class="form">
+	Major:	 		<font color='white'>OO..</font><select name='major'>
 	 				<option value='Undecided'>Undecided</option>
-  					<option value='Computer Science' <?php if($major == 'Computer Science'){echo"selected";} ?>>Computer Science</option>
-  					<option value='Computer Engineering' <?php if($major == 'Computer Engineering'){echo"selected";} ?>>Computer Engineering</option>
-  					<option value='Mechanical Engineering' <?php if($major == 'Mechanical Engineering'){echo"selected";} ?>>Mechanical Engineering</option>
-  					<option value='Chemical Engineering' <?php if($major == 'Chemical Engineering'){echo"selected";}?>>Chemical Engineering</option>
+  					<option value='Computer Science' >Computer Science</option>
+  					<option value='Computer Engineering' >Computer Engineering</option>
+  					<option value='Mechanical Engineering' >Mechanical Engineering</option>
+  					<option value='Chemical Engineering' >Chemical Engineering</option>
   					</select><br>
-	Student Email:	<input type='text' name='studentEmail' <?php echo "value='$studentEmail'"?> ><br>
-  	Student ID:	<input type='text' name='studentId' <?php echo "value='$studentId'"?> ><br>
-
-<?php
-
-if($signinError){
-		//error message in red font
-   		echo "<p><font color='#ff0000' > Please make sure all fields are filled, the first letter of<br> 
-										first/last name is capitalized, the email has valid format,and the <br> 
-										id format is two capital letters followed by five numbers.</p>";	
-}
-?>
+</div>
+<div class="form">	
+	Student Email:	<input type='text' name='studentEmail' value='' ><br>
+</div>
+<div class="form">  	
+	Student ID:	<input type='text' name='studentId' value='' ><br>
+</div>
 
 <!--signin button-->
-<input type='submit' value='Sign In'>
+<div class="button"><input type='submit' value='Sign In'></div>
 </form>
 
 <!--back button-->
 <form action='index.php' name='goBack'>
-<input type='submit' value = 'Go Back'>
+<div class="button"><input type='submit' value='Go Back'></div>
 </form>
+</div>
+<!--
+Name: Nathaniel Baylon
+Date:03/21/2015
+Class: CMSC331
+Project:Advisor Time Selection
+File: Proj2Tail.html
+-->
 
-<?php
-$_SESSION['lastPage'] = "StudentSignin.php";
-include('Proj2Tail.html');
-?>
+</body>
+</html>

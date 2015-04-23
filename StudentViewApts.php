@@ -12,7 +12,7 @@ and "View Created Appointment" was created.
 
 session_start();
 include('Proj2Head.html');
-include('CommonMethods.php');
+include('../CommonMethods.php');
 
 $fName = $_SESSION['fName'];
 
@@ -103,28 +103,43 @@ else{
 	
 	echo "$fName, here are the appointmnets you have created this semester. Today is $today<br><br>";
 	if($pastAptsLen>0){
-		echo "Past Appointments: <br>";
-	}
-	// For loop for $pastApts
+		?>
+		<table border = "3">
+		<!--caption defined right after table tag-->
+		<caption> Past Appointments </caption>
+		<tr>
+			<th>Time</th>
+			<th>Advisor</th>
+			<th>Email</th>
+			<th>Phone</th>
+			<th>Room</th>
+		<tr>
+	 	<?php
+	
+		// For loop for $pastApts
 
-	///////////////////////////******************************///////////////
-	foreach($pastAdvisorInfoArray as $row)
+		///////////////////////////******************************///////////////
+		foreach($pastAdvisorInfoArray as $row)
 
-	for($i = 0; $i < $pastAptsLen; $i++){
-		$sqlFormatTime = $pastApts[$i];
-		$studentFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
-		echo $studentFormatTime;
-		$advisorfName = $pastAdvisorInfoArray[$i]['fName'];
-		$advisorlName = $pastAdvisorInfoArray[$i]['lName'];
-		$advisorEmail = $pastAdvisorInfoArray[$i]['advisorEmail'];
-		$advisorPhoneNumber = $pastAdvisorInfoArray[$i]['advisorPhoneNumber'];
-		$advisorRoomNumber = $pastAdvisorInfoArray[$i]['advisorRoomNumber'];
-		echo " ".$advisorfName." ".$advisorlName.": ";
-		echo "email: $advisorEmail, ";
-		echo "phone: $advisorPhoneNumber, ";
-		echo "room: $advisorRoomNumber";
-		echo "<br>";
-	} // end for loop
+		for($i = 0; $i < $pastAptsLen; $i++){
+			
+			$advisorfName = $pastAdvisorInfoArray[$i]['fName'];
+			$advisorlName = $pastAdvisorInfoArray[$i]['lName'];
+			$advisorEmail = $pastAdvisorInfoArray[$i]['advisorEmail'];
+			$advisorPhoneNumber = $pastAdvisorInfoArray[$i]['advisorPhoneNumber'];
+			$advisorRoomNumber = $pastAdvisorInfoArray[$i]['advisorRoomNumber'];
+			$sqlFormatTime = $pastApts[$i];
+			$studentFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
+			echo "<tr>";
+				echo "<td>$studentFormatTime</td>";
+				echo "<td>$advisorfName $advisorlName</td>";
+				echo "<td>$advisorEmail</td>";
+				echo "<td>$advisorPhoneNumber</td>";
+				echo "<td>$advisorRoomNumber</td>";
+			echo "</tr>";
+		} // end for loop
+		echo "</table>";
+	}//end if
 	echo "<br>";
 
 
@@ -146,24 +161,39 @@ else{
 
 
 	if($upcomingAptsLen > 0){	 
-		echo "Upcoming Appointments:<br>";
+		?>
+		<table border = "3">
+		<!--caption defined right after table tag-->
+		<caption> Upcoming Appointments </caption>
+		<tr>
+			<th>Time</th>
+			<th>Advisor</th>
+			<th>Email</th>
+			<th>Phone</th>
+			<th>Room</th>
+		<tr>
+
+		<?php
+	
+		for($j = 0; $j < $upcomingAptsLen; $j++){
+			
+			$advisorfName = $upcomingAdvisorInfoArray[$j]['fName'];
+			$advisorlName = $upcomingAdvisorInfoArray[$j]['lName'];
+			$advisorEmail = $upcomingAdvisorInfoArray[$j]['advisorEmail'];
+			$advisorPhoneNumber = $upcomingAdvisorInfoArray[$j]['advisorPhoneNumber'];
+			$advisorRoomNumber = $upcomingAdvisorInfoArray[$j]['advisorRoomNumber'];
+			$sqlFormatTime = $upcomingApts[$j];
+			$userFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
+			echo "<tr>";	
+				echo "<td>$userFormatTime</td>";
+				echo "<td>$advisorfName $advisorlName</td>";
+				echo "<td>$advisorEmail</td>";
+				echo "<td>$advisorPhoneNumber</td>";
+				echo "<td>$advisorRoomNumber</td>";
+			echo"</tr>";
+		} // end for loop
+		echo"</table>";
 	}
-	for($j = 0; $j < $upcomingAptsLen; $j++){
-		$sqlFormatTime = $upcomingApts[$j];
-		$userFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
-		echo $userFormatTime;
-		
-		$advisorfName = $upcomingAdvisorInfoArray[$j]['fName'];
-		$advisorlName = $upcomingAdvisorInfoArray[$j]['lName'];
-		$advisorEmail = $upcomingAdvisorInfoArray[$j]['advisorEmail'];
-		$advisorPhoneNumber = $upcomingAdvisorInfoArray[$j]['advisorPhoneNumber'];
-		$advisorRoomNumber = $upcomingAdvisorInfoArray[$j]['advisorRoomNumber'];
-		echo " ".$advisorfName." ".$advisorlName.": ";
-		echo "email: $advisorEmail, ";
-		echo "phone: $advisorPhoneNumber, ";
-		echo "room: $advisorRoomNumber";
-		echo "<br>";
-	} // end for loop
 echo "<br>";
 	
 } // End of big else statement

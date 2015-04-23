@@ -13,13 +13,14 @@ Last page:StudentOptions.php
 
 session_start();
 include('Proj2Head.html');
-include('CommonMethods.php');
+include('../CommonMethods.php');
 $studentId = $_SESSION['studentId'];
 $changeAdvisorId = $_SESSION['studentsChangeAdvisor'];
 $changeAdvisorName = $_SESSION['advisors'][$changeAdvisorId];
 $fName = $_SESSION['fName'];
 $now = date("Y-m-d H:i:s");
 
+echo "<div class='form-div'>";
 //defining date range the student can select from
 //today's day of week
 $todayDOW = date(l);
@@ -126,7 +127,7 @@ foreach($allPotentialAppointmentArray as $row){
 		$userFormatDate = date("l, m/d/Y",strtotime($counter));
 		if(date('l', strtotime($userFormatDate))!= "Saturday" && 
 			date('l', strtotime($userFormatDate))!= "Sunday"){
-			$outputArray[$userFormatDate] = array('No available appointment times');
+			$outputArray[$userFormatDate] = array('No available times');
 		}
 		//increment counter
 		$counter = date("Y-m-d H:i:s", strtotime("+1 days", strtotime($counter)));
@@ -194,20 +195,25 @@ foreach($allPotentialAppointmentArray as $row){
 			echo "<select name = '$intDay'>";
 			foreach($times as $startTime){
 				//display as: "g:i-g:i a" for user
-				if($startTime != 'No available appointment times'){
+				if($startTime != 'No available times'){
 					$endTime = date("g:i a", strtotime("+30 minutes", strtotime($startTime)));
 					$availableTime = $startTime."-".$endTime;
 					$intTime = strtotime($startTime);
 					echo "<option value = '$intTime'>$availableTime</option>";
 				}
-			}	
+			}
+			echo "</select><br>";
 		}//end if
 	
 		else{
 			//No available appointments
-			echo "$userDay: $times[0]";
+			//echo "$userDay: $times[0]";
+			echo"<input type='radio' name = 'date' value = '$userDay' disabled>";
+			echo"$userDay:";
+			echo"<select name = '$intDay' disabled>";
+			echo"<option value = '$times[0]'>$times[0]</option>";
+			echo"</select><br>";
 		}//end else
-	echo "</select><br>";
 	}//end foreach	
 	echo"<br>";
 
@@ -225,12 +231,16 @@ if(empty($availableAppointmentArray)){
 	}
 }
 ?>
+<div class='button'>
 <input type = 'submit' value = 'Change Appointment'<?php if($disableNext){echo "hidden";}?> >
-	</form>
-<form action='StudentOptions.php'>
-	<input type = 'submit' value='Go Back'>
+</div>	
 </form>
-
+<form action='StudentOptions.php'>
+<div class = 'button'>
+	<input type = 'submit' value='Go Back'>
+</div>
+</form>
+</div>
 <?php
 $_SESSION['lastPage'] = 'StudentChangeAppointment.php';
 include('Proj2Tail.html');

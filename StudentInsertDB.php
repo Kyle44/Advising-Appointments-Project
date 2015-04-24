@@ -13,7 +13,7 @@ page was 'StudentAreYouSure.php' and was created.
 //make sure header comments come after <?php, or else they show up as text on the page
 
 session_start();
-include('CommonMethods.php');
+include('../CommonMethods.php');
 // Make sure we're coming from the right page
 if($_SESSION['lastPage'] != "StudentCreateAppointment.php"){
 	echo "Something went wrong!<br>";
@@ -54,10 +54,12 @@ else{
 	
 }
 
+$_SESSION['showStudentOptionsMessage'] = true;
+$_SESSION['studentOptionsMessage'] = "You have successfully created an appointment.";
 // Make last page equal this page.
 $_SESSION['lastPage'] = "StudentInsertDB.php";
 
 //header should come after setting last page, or else it won't reach that part of the code
-header('Location: index.php');
+header('Location: ValidateStudentSignin.php');
 
 ?>

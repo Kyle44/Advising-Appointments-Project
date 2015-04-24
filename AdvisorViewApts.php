@@ -3,11 +3,12 @@
 /*
 Name: Nathaniel Baylon, Tommy Tran, Kyle Fritz
 Date: 03/29/2015
+Last Modified: 4/24/15
 Class: CMSC331
 Project: Project 2
 File: AdvisorViewApts.php
-File Description: This page will only come up if the last page was StudentOptions.php 
-and "View Created Appointment" was created.
+File Description: This page will only come up if the last page was AdvisorOptions.php 
+and "View Created Appointment" was selected.
 */
 
 session_start();
@@ -17,19 +18,19 @@ include('CommonMethods.php');
 $fName = $_SESSION['fName'];
 
 // Make sure we're coming from the right page
-if($_SESSION['lastPage'] != "StudentOptions.php"){
+if($_SESSION['lastPage'] != "AdvisorOptions.php"){
 	echo "Something went wrong!<br>";
 }
 
 else{
-	// $studentId becomes whatever the Session variable of studentId holds
-	$studentId = $_SESSION['studentId'];
+	// $employeeId becomes whatever the Session variable of employeeId holds
+	$advisorId = $_SESSION['advisorId'];
 
 	// $debug to true would print out the query whenever one was executed, false wouldn't
 	$debug = false;
 	$COMMON = new Common($debug);
-	// Select the ENTIRE ROW for appointments from the database Advising_Appointments2 where the student's Id occurs
-	$sql = "SELECT * FROM `Advising_Appointments2` WHERE `studentId` = '$studentId'";
+	// Select the ENTIRE ROW for appointments from the database Advising_Appointments2 where the advisor's Id occurs
+	$sql = "SELECT * FROM `Advising_Appointments2` WHERE `advisorId` = '$advisorId'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 	
 
@@ -57,14 +58,14 @@ else{
 
 			// if row['dateTime'] is before right now, put this in $pastApts array
 			if($row['dateTime'] < $dateAndTime){
-				// Trying to push the date and time onto $pastApts array
+				// Push the date and time onto $pastApts array
 				array_push($pastApts, $row['dateTime']);
 				// Each row here is sent to $pastRowArray
 				array_push($pastRowArray, $row);
 			} // end if statement
 			
 			else{
-				// Trying to push the date and time onto $upcomingApts array
+				// Push the date and time onto $upcomingApts array
 				array_push($upcomingApts, $row['dateTime']);
 				// Upcoming array info
 				array_push($upcomingRowArray, $row);	
@@ -74,19 +75,19 @@ else{
 	
 
 
-	// All data for advisors in past appointments
-	$pastAdvisorInfoArray = array();
+	// All data for students in past appointments
+	$pastStudentInfoArray = array();
 
 
-	// for loop for past appointment's Advising info. 
+	// for loop for past appointment's Student info. 
 	foreach($pastRowArray as $element){
-		$advisorId = $element['advisorId'];
-		$sql = "SELECT * FROM `Advisor_Info2` WHERE `employeeId` = '$advisorId'";//changed this line!!!
+		$studentId = $element['studentId'];
+		$sql = "SELECT * FROM `Student_Info2` WHERE `studentId` = '$studentId'";
 		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 		// row is all of the info for this advisor
 		$row = mysql_fetch_assoc($rs);
 		// Every row is pushed onto the advisorInfoArray.
-		array_push($pastAdvisorInfoArray, $row);
+		array_push($pastStudentInfoArray, $row);
 	}
 
 	
@@ -99,97 +100,116 @@ else{
 	
 	// Output for times of Past/Upcoming Appointments
 	
-	echo "$fName, here are the appointmnets you have created this semester. Today is $today<br><br>";
-	echo "Past Appointments: <br>";
-	// For loop for $pastApts
+	echo "$fName, here are the appointments you have created this semester. Today is $today<br><br>";
+	if($pastAptsLen>0){
+		?>
+		<table border = "3">
+		<!--caption defined right after table tag-->
+		<caption> Past Appointments </caption>
+		<tr>
+			<th>Time</th>
+			<th>Student</th>
+			<th>Email</th>
+			<th>Major</th>
+		<tr>
+	 	<?php
 
-	///////////////////////////******************************///////////////
-	foreach($pastAdvisorInfoArray as $row)
 
-	for($i = 0; $i < $pastAptsLen; $i++){
-		$sqlFormatTime = $pastApts[$i];
-		$studentFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
-		echo $studentFormatTime;
-		$advisorfName = $pastAdvisorInfoArray[$i]['fName'];
-		$advisorlName = $pastAdvisorInfoArray[$i]['lName'];
-		$advisorEmail = $pastAdvisorInfoArray[$i]['advisorEmail'];
-		$advisorPhoneNumber = $pastAdvisorInfoArray[$i]['advisorPhoneNumber'];
-		$advisorRoomNumber = $pastAdvisorInfoArray[$i]['advisorRoomNumber'];
-		echo " ".$advisorfName." ".$advisorlName.": ";
-		echo "email: $advisorEmail, ";
-		echo "phone: $advisorPhoneNumber, ";
-		echo "room: $advisorRoomNumber";
-		echo "<br>";
-	} // end for loop
+
+		// For loop for $pastApts
+
+	
+		for($i = 0; $i < $pastAptsLen; $i++){
+			$sqlFormatTime = $pastApts[$i];
+			$advisorFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
+			echo $advisorFormatTime;
+			$studentfName = $pastStudentInfoArray[$i]['fName'];
+			$studentlName = $pastStudentInfoArray[$i]['lName'];
+			$studentEmail = $pastStudentInfoArray[$i]['studentEmail'];
+			$studentMajor = $pastStudentInfoArray[$i]['major'];
+			echo "<tr>";	
+				echo "<td>$advisorFormatTime</td>";
+				echo "<td>$studentfName $studentlName</td>";
+				echo "<td>$studentEmail</td>";
+				echo "<td>$studentMajor</td>";
+			echo"</tr>";
+		} // end for loop
+		echo "</table>";
+	}//end if
 	echo "<br>";
 
 
-	// All data for advisors in upcoming appointments
-	$upcomingAdvisorInfoArray = array();
+	// All data for students in upcoming appointments
+	$upcomingStudentInfoArray = array();
 
 	
 	foreach($upcomingRowArray as $element){
-		$advisorId = $element['advisorId'];
+		$studentId = $element['studentId'];
 
-		$sql = "SELECT * FROM `Advisor_Info2` WHERE `employeeId` = '$advisorId'";//////changed this line!!!
+		$sql = "SELECT * FROM `Student_Info2` WHERE `studentId` = '$studentId'";
 		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
-		// row is all of the info for this advisor
+		// row is all of the info for this student
 		$row = mysql_fetch_assoc($rs);
-		// Every row is pushed onto the advisorInfoArray.
-		array_push($upcomingAdvisorInfoArray, $row);
+		// Every row is pushed onto the studentInfoArray.
+		array_push($upcomingStudentInfoArray, $row);
 	}
 
 
+	if($upcomingAptsLen > 0){	 
+		?>
+		<table border = "3">
+		<!--caption defined right after table tag-->
+		<caption> Upcoming Appointments </caption>
+		<tr>
+			<th>Time</th>
+			<th>Student</th>
+			<th>Email</th>
+			<th>Major</th>
+		<tr>
+
+		<?php
+	
 
 	 
-	echo "Upcoming Appointments:<br>";
-	for($j = 0; $j < $upcomingAptsLen; $j++){
-		$sqlFormatTime = $upcomingApts[$j];
-		$userFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
-		echo $userFormatTime;
-		
-		$advisorfName = $upcomingAdvisorInfoArray[$j]['fName'];
-		$advisorlName = $upcomingAdvisorInfoArray[$j]['lName'];
-		$advisorEmail = $upcomingAdvisorInfoArray[$j]['advisorEmail'];
-		$advisorPhoneNumber = $upcomingAdvisorInfoArray[$j]['advisorPhoneNumber'];
-		$advisorRoomNumber = $upcomingAdvisorInfoArray[$j]['advisorRoomNumber'];
-		echo " ".$advisorfName." ".$advisorlName.": ";
-		echo "email: $advisorEmail, ";
-		echo "phone: $advisorPhoneNumber, ";
-		echo "room: $advisorRoomNumber";
-		echo "<br>";
-	} // end for loop
-echo "<br>";
+		//echo "Upcoming Appointments:<br>";
+		for($j = 0; $j < $upcomingAptsLen; $j++){
+			$sqlFormatTime = $upcomingApts[$j];
+			$userFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
+			echo $userFormatTime;
+			
+			$studentfName = $upcomingStudentInfoArray[$j]['fName'];
+			$studentlName = $upcomingStudentInfoArray[$j]['lName'];
+			$studentEmail = $upcomingStudentInfoArray[$j]['studentEmail'];
+			$studentMajor = $upcomingStudentInfoArray[$j]['major'];
+
+
+			echo "<tr>";	
+				echo "<td>$userFormatTime</td>";
+				echo "<td>$studentfName $studentlName</td>";
+				echo "<td>$studentEmail</td>";
+				echo "<td>$studentMajor</td>";
+			echo"</tr>";
+		} // end for loop
+		echo"</table>";
+	}
+	echo "<br>";
 	
 } // End of big else statement
 
 ?>
 
 
-	<!--  THE BUTTONS "Go Back" and "Done".  -->
-	<!-- action to go to StudentOptions.php.  Name means StudentViewApts.php (this page) to StudentOptions.php  -->
-	<form action='StudentOptions.php' name='SVAtoSOptions'>
+	<!--  THE BUTTON "Go Back"
+	<!-- action to go to AdvisorOptions.php.  Name means AdvisorViewApts.php (this page) to AdvisorOptions.php  -->
+	<form action='AdvisorOptions.php' name='AVAtoAOptions'>
 	<!--Go Back button-->
 	<input type='submit' value='Go Back'>
 	<!-- End of form  -->
 	</form>
 
-	<!-- action='index.php to go to index.php.
-	Name means StudentViewApts.php (this page) to index.php
-	 post method is just for sending input data from forms-->
-	
-	<!--you need a new form if the button goes to a different place-->
-	<form action='index.php' name='SVAtoINDEX'>
-	<!--Done button-->
-	<form action='StudentOptions.php' name='SVAtoSTUDENTOPTIONS'>
-	<input type= 'submit' value='Done'>
-	<!-- End of form -->
-	</form>
-
-
 
 <?php
 	// Make last page equal this page.
-  	$_SESSION['lastPage'] = "StudentViewApts.php";
+  	$_SESSION['lastPage'] = "AdvisorViewApts.php";
 	include('Proj2Tail.html');
 ?>

@@ -33,22 +33,25 @@ $upcomingWithinDay = $_SESSION['upcomingWithinDay'];
 <div class="form">
 <input type = 'radio' name = 'rb_option' value = 'createGroupAppointment' 
 <?php 
+/*
 if(!$groupEnabled){
-	echo 'disabled';
+	//echo 'disabled';
 }
-
-elseif($_SESSION['studentChoice'] == 'createGroupAppointment' || 
-		empty($_SESSION['studentChoice'])){
+*/
+if($_SESSION['studentChoice'] == 'createGroupAppointment' || 
+		!isset($_SESSION['studentChoice'])){
 echo 'checked';
 }
 ?> >Create Group Appointment<br>
 <input type = 'radio' name = 'rb_option' value = 'createIndividualAppointment' 
-<?php if(!$indEnabled){
-echo 'disabled';
+<?php 
+/*
+if(!$indEnabled){
+//echo 'disabled';
 }
-
+*/
 //checked if group disabled
-elseif($_SESSION['studentChoice'] == 'createIndividualAppointment'||!$groupEnabled){
+if($_SESSION['studentChoice'] == 'createIndividualAppointment'){
 echo ' checked';
 }
 ?> >Create Individual Appointment<br>
@@ -56,16 +59,18 @@ echo ' checked';
 Advisor:
 <?php
 echo "<select name='sel_createAdvisor'";
+/*
 if(!$indEnabled){
-	echo 'disabled';
+	//echo 'disabled';
 }
+*/
 echo '>';
 
 //=> is not a mistake. It's like for each key as its values
 foreach($advisors as $advisorId=>$advisorName){
 	if($advisorName != 'Group Advising'){
 		echo"<option value = '$advisorId'";
-	 	if($_SESSION['studentCreateAdvisor'] == $advisorId){
+	 	if($_SESSION['studentsCreateAdvisor'] == $advisorId){
 			echo "selected";
 		}
 		echo ">";
@@ -78,35 +83,42 @@ echo "</select><br><br>";
 <!--------------------------------------------------------------------------->
 <div class="form">
 <input type = 'radio' name = 'rb_option' value = 'changeToGroupAppointment'
-<?php if(!$hasUpcomingAppointment || $hasPastAppointment || $upcomingWithinDay){
-echo "disabled";
+<?php 
+/*
+if(!$hasUpcomingAppointment || $hasPastAppointment || $upcomingWithinDay){
+//echo "disabled";
 } 
-
+*/
 //cancel and change will always be enabled/disabled at the same time, so 
 //only check if this was the student's option (coming from a later page)
-elseif($_SESSION['studentChoice'] == 'changeToGroupAppointment'||(!$groupEnabled && !$indEnabled)){
+if($_SESSION['studentChoice'] == 'changeToGroupAppointment'){
 	echo "checked";
 }
 ?> >Change to Group Appointment<br>
 
 <!------------------------------------------------------------------------------->
 <input type = 'radio' name = 'rb_option' value = 'changeToIndividualAppointment'
-<?php if(!$hasUpcomingAppointment || $upcomingWithinDay){
-echo "disabled";
+<?php 
+/*
+if(!$hasUpcomingAppointment || $upcomingWithinDay){
+//echo "disabled";
 }
-//cancel and change will always be enabled/disabled at the same time, so 
-elseif($_SESSION['studentChoice'] == 'changeToIndividualAppointment' ||(!$groupEnabled && !$indEnabled && $hasPastAppointmnet)){
+*/
+if($_SESSION['studentChoice'] == 'changeToIndividualAppointment'){
 echo "checked";
 }
+
 ?> >Change to Individual Appointment<br>
 Advisor:
 
 <!---------------------------------------------------------------------->
 <?php
 echo "<select name='sel_changeAdvisor'";
+/*
 if(!$hasUpcomingAppointment|| $upcomingWithinDay){
-	echo 'disabled';
+	//echo 'disabled';
 }
+*/
 echo '>';
 foreach($advisors as $advisorId=>$advisorName){
 	if($advisorName != 'Group Advising'){
@@ -124,12 +136,15 @@ echo "</select><br><br>";
 <!------------------------------------------------------------------------>
 <div class="form">
 <input type = 'radio' name = 'rb_option' value = 'viewAppointment'
-<?php if(!$_SESSION['viewEnabled']){
-echo "disabled";
+<?php 
+/*
+if(!$_SESSION['viewEnabled']){
+//echo "disabled";
 }
+*/
 
-//checked if previous 2 are disabled
-elseif($_SESSION['studentChoice'] == 'viewAppointment' ||$hasPastAppointment || $hasUpcomingAppointment){
+if($_SESSION['studentChoice'] == 'viewAppointment'){ 
+//||$hasPastAppointment || $hasUpcomingAppointment){//commented out for now
 echo " checked";
 }
 ?> >View Created Appointment<br>
@@ -137,11 +152,14 @@ echo " checked";
 
 <!----------------------------------------------------------------------------->
 <input type = 'radio' name = 'rb_option' value = 'cancelAppointment'
-<?php if(!$hasUpcomingAppointment || $upcomingWithinDay){
-echo "disabled";
+<?php 
+/*
+if(!$hasUpcomingAppointment || $upcomingWithinDay){
+//echo "disabled";
 }
+*/
 //will never be checked by default
-elseif($_SESSION['studentChoice'] == 'cancelAppointment'){
+if($_SESSION['studentChoice'] == 'cancelAppointment'){
 echo "checked";
 }
  ?> >Cancel Created Appointment<br><br>

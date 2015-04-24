@@ -14,6 +14,7 @@ $studentsChoice = $_POST['rb_option'];
 $createAdvisor = $_POST['sel_createAdvisor'];
 $changeAdvisor = $_POST['sel_changeAdvisor'];
 $_SESSION['studentChoice'] = $studentsChoice;
+$_SESSION['showStudentOptionsMessage'] = false;
 
 if($studentsChoice == 'createGroupAppointment'){
 	$_SESSION['studentsCreateAdvisor'] = 'GROUPAP';

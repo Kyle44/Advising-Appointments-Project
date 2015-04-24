@@ -104,7 +104,7 @@ Advisor:
 <!---------------------------------------------------------------------->
 <?php
 echo "<select name='sel_changeAdvisor'";
-if(!$hasUpcomingAppointment){
+if(!$hasUpcomingAppointment|| $upcomingWithinDay){
 	echo 'disabled';
 }
 echo '>';
@@ -144,9 +144,18 @@ echo "disabled";
 elseif($_SESSION['studentChoice'] == 'cancelAppointment'){
 echo "checked";
 }
- ?> >Cancel Created Appointment<br>
+ ?> >Cancel Created Appointment<br><br>
 </div>
 <!------------------------------------------------------------------------------>
+
+<!--student options message-->
+<?php
+if($_SESSION['showStudentOptionsMessage']){
+
+echo $_SESSION['studentOptionsMessage']."<br>";
+}
+?>
+<!---------------------------->
 
 <!--submit button-->
 <div class="button"><input type = 'submit' value = 'Next'></div>

@@ -201,25 +201,15 @@ echo "<br>";
 ?>
 
 
-	<!--  THE BUTTONS "Go Back" and "Done".  -->
+	<!--  THE "Go Back" -->
 	<!-- action to go to StudentOptions.php.  Name means StudentViewApts.php (this page) to StudentOptions.php  -->
+	
 	<form action='StudentOptions.php' name='SVAtoSOptions'>
 	<!--Go Back button-->
 	<div class="button"><input type='submit' value='Go Back'></div>
 	<!-- End of form  -->
 	</form>
 
-	<!-- action='index.php to go to index.php.
-	Name means StudentViewApts.php (this page) to index.php
-	 post method is just for sending input data from forms-->
-	
-	<!--you need a new form if the button goes to a different place-->
-	<form action='index.php' name='SVAtoINDEX'>
-	<!--Done button-->
-	<form action='StudentOptions.php' name='SVAtoSTUDENTOPTIONS'>
-	<div class="button"><input type= 'submit' value='Done'></div>
-	<!-- End of form -->
-	</form>
 </div>
 <?php
 	// Make last page equal this page.

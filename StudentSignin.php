@@ -10,6 +10,8 @@ File Description: In this page, the student gives all their necessary informatio
 */
 
 session_start();
+$_SESSION['showSudentOptionsMessage'] = false;
+
 include('Proj2Head.html');
 //info format user enters is checked in StudentOptions.php
 //if Student goes back from here, signin error will be unset

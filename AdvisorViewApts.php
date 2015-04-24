@@ -24,7 +24,7 @@ if($_SESSION['lastPage'] != "AdvisorOptions.php"){
 
 else{
 	// $employeeId becomes whatever the Session variable of employeeId holds
-	$advisorId = $_SESSION['advisorId'];
+	$advisorId = $_SESSION['advisorView'];
 
 	// $debug to true would print out the query whenever one was executed, false wouldn't
 	$debug = false;
@@ -73,72 +73,15 @@ else{
 	
 	} // end of while loop
 	
+		
 
-
-	// All data for students in past appointments
-	$pastStudentInfoArray = array();
-
-
-	// for loop for past appointment's Student info. 
-	foreach($pastRowArray as $element){
-		$studentId = $element['studentId'];
-		$sql = "SELECT * FROM `Student_Info2` WHERE `studentId` = '$studentId'";
-		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
-		// row is all of the info for this advisor
-		$row = mysql_fetch_assoc($rs);
-		// Every row is pushed onto the advisorInfoArray.
-		array_push($pastStudentInfoArray, $row);
-	}
-
-	
-
-
-	// Count length of both arrays so for loops later can work
-	$pastAptsLen = count($pastApts);
 	$upcomingAptsLen = count($upcomingApts);
+	//echo"$upcomingAptsLen <br>";
 	
 	
 	// Output for times of Past/Upcoming Appointments
 	
-	echo "$fName, here are the appointments you have created this semester. Today is $today<br><br>";
-	if($pastAptsLen>0){
-		?>
-		<table border = "3">
-		<!--caption defined right after table tag-->
-		<caption> Past Appointments </caption>
-		<tr>
-			<th>Time</th>
-			<th>Student</th>
-			<th>Email</th>
-			<th>Major</th>
-		<tr>
-	 	<?php
-
-
-
-		// For loop for $pastApts
-
 	
-		for($i = 0; $i < $pastAptsLen; $i++){
-			$sqlFormatTime = $pastApts[$i];
-			$advisorFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
-			echo $advisorFormatTime;
-			$studentfName = $pastStudentInfoArray[$i]['fName'];
-			$studentlName = $pastStudentInfoArray[$i]['lName'];
-			$studentEmail = $pastStudentInfoArray[$i]['studentEmail'];
-			$studentMajor = $pastStudentInfoArray[$i]['major'];
-			echo "<tr>";	
-				echo "<td>$advisorFormatTime</td>";
-				echo "<td>$studentfName $studentlName</td>";
-				echo "<td>$studentEmail</td>";
-				echo "<td>$studentMajor</td>";
-			echo"</tr>";
-		} // end for loop
-		echo "</table>";
-	}//end if
-	echo "<br>";
-
-
 	// All data for students in upcoming appointments
 	$upcomingStudentInfoArray = array();
 
@@ -165,13 +108,14 @@ else{
 			<th>Student</th>
 			<th>Email</th>
 			<th>Major</th>
+			<th>Student Id</th>
 		<tr>
 
 		<?php
 	
 
 	 
-		//echo "Upcoming Appointments:<br>";
+		echo "Upcoming Appointments:<br>";
 		for($j = 0; $j < $upcomingAptsLen; $j++){
 			$sqlFormatTime = $upcomingApts[$j];
 			$userFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
@@ -181,6 +125,8 @@ else{
 			$studentlName = $upcomingStudentInfoArray[$j]['lName'];
 			$studentEmail = $upcomingStudentInfoArray[$j]['studentEmail'];
 			$studentMajor = $upcomingStudentInfoArray[$j]['major'];
+			$studentId = $upcomingStudentInfoArray[$j]['studentId'];
+
 
 
 			echo "<tr>";	
@@ -188,6 +134,7 @@ else{
 				echo "<td>$studentfName $studentlName</td>";
 				echo "<td>$studentEmail</td>";
 				echo "<td>$studentMajor</td>";
+				echo "<td>$studentId</td>";
 			echo"</tr>";
 		} // end for loop
 		echo"</table>";

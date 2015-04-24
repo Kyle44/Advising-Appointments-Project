@@ -12,7 +12,7 @@ one), and deletes it.
 
 session_start();
 include ('Proj2Head.html');
-include('CommonMethods.php');
+include('../CommonMethods.php');
 
 
 $dateAndTime = date('Y-m-d H:i:s');
@@ -61,10 +61,10 @@ else{
 		$advisorName ";
 }
 echo"on $userFormatDate at $userFormatTime.<br>";
-echo"Would you would like to delete this appointment?<br><br>";
+echo"Would you would like to cancel this appointment?<br><br>";
 ?>
 <form action = 'StudentDeleteDB.php'>
-	<div class="button"><input type = 'submit' value='Delete'></div>
+	<div class="button"><input type = 'submit' value='Cancel'></div>
 </form>
 
 <form action='StudentOptions.php'>

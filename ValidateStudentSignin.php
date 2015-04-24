@@ -10,11 +10,13 @@ File Description: Validation for student signin
 */
 
 session_start();
-include('CommonMethods.php');
+include('../CommonMethods.php');
 
 //returns in sql format
 function minusTwoBusinessDays($day){
 	//echo"Day input: $day<br>";
+	$day = date('Y-m-d 23:59:59',strtotime($day));
+	//echo "$day<br>";
 	$dayMinusTwoDOW = date('l',strtotime('-2 days', strtotime($day)));
 	//echo "$dayMinusTwoDOW";
 	$dayMinusTwo = date('Y-m-d H:i:s', strtotime('-2 days', strtotime($day)));
@@ -36,53 +38,72 @@ function minusTwoBusinessDays($day){
 		return ($dayMinusTwo);
 	}
 }
+//Testing minusTwoBusinessDays
+/*
+$day = minusTwoBusinessDays(date('l', strtotime("Monday")));
+echo date('l',strtotime($day));
+$day = minusTwoBusinessDays(date('l', strtotime("Tuesday")));
+echo date('l',strtotime($day));
+$day = minusTwoBusinessDays(date('l', strtotime("Wednesday")));
+echo date('l',strtotime($day));
+$day = minusTwoBusinessDays(date('l', strtotime("Thursday")));
+echo date('l',strtotime($day));
+$day = minusTwoBusinessDays(date('l', strtotime("Friday")));
+echo date('l',strtotime($day));
+$day = minusTwoBusinessDays(date('l', strtotime("Saturday")));
+echo date('l',strtotime($day));
+$day = minusTwoBusinessDays(date('l', strtotime("Sunday")));
+echo date('l',strtotime($day));
 
-//add signin info to session
-$_SESSION['fName'] = trim($_POST['fName']);
-$_SESSION['lName'] = trim($_POST['lName']);
-$_SESSION['major'] = trim($_POST['major']);
-$_SESSION['studentEmail'] = trim($_POST['studentEmail']);
-$_SESSION['studentId'] = trim($_POST['studentId']);
+//this has to be the ceiling of 2 days
 
-$studentId = $_SESSION['studentId'];
+*/
 
 
+if($_SESSION['lastPage'] == 'StudentSignin.php'){
+	//add signin info to session
+	$_SESSION['fName'] = trim($_POST['fName']);
+	$_SESSION['lName'] = trim($_POST['lName']);
+	$_SESSION['major'] = trim($_POST['major']);
+	$_SESSION['studentEmail'] = trim($_POST['studentEmail']);
+	$_SESSION['studentId'] = trim($_POST['studentId']);
 
-
-
+	//$studentId = $_SESSION['studentId'];
 
 
 ///////////////////////////////Signin error checking///////////////////////
-$_SESSION['signinError'] = false;
-//error checking for blank fields
-if(strlen($_SESSION['fName'])==0 || strlen($_SESSION['lName'])==0
-				||strlen($_SESSION['studentId'])==0
-				||strlen($_SESSION['studentEmail']) == 0){
-   $_SESSION['signinError'] = true;
-}
+	$_SESSION['signinError'] = false;
+	//error checking for blank fields
+	if(strlen($_SESSION['fName'])==0 || strlen($_SESSION['lName'])==0
+					||strlen($_SESSION['studentId'])==0
+					||strlen($_SESSION['studentEmail']) == 0){
+   		$_SESSION['signinError'] = true;
+	}
 
-//error checking for capital letters in f/lname
-elseif(!ctype_upper(substr($_SESSION['fName'], 0, 1)) || 
-	!ctype_upper(substr($_SESSION['lName'], 0, 1))){
-    $_SESSION['signinError'] = true;
-}
+	//error checking for capital letters in f/lname
+	elseif(!ctype_upper(substr($_SESSION['fName'], 0, 1)) || 
+		!ctype_upper(substr($_SESSION['lName'], 0, 1))){
+    		$_SESSION['signinError'] = true;
+	}
 
-//error checking for valid email format:
-//using regexes.Note: not checking .com,etc
-$emailPattern = "/[^@]+@[^@]+/";
-if (!preg_match($emailPattern, $_SESSION['studentEmail'])){
-	$_SESSION['signinError'] = true;
-}
+	//error checking for valid email format:
+	//using regexes.Note: not checking .com,etc
+	$emailPattern = "/[^@]+@[^@]+/";
+	if (!preg_match($emailPattern, $_SESSION['studentEmail'])){
+		$_SESSION['signinError'] = true;
+	}
 
-//error checking for valid id format: 7 chars, first 2 capital, last 5 numeric
-elseif(strlen($_SESSION['studentId'])!=7 || !ctype_upper(substr($_SESSION['studentId'],0,2))
+	//error checking for valid id format: 7 chars, first 2 capital, last 5 numeric
+	elseif(strlen($_SESSION['studentId'])!=7 || !ctype_upper(substr($_SESSION['studentId'],0,2))
 										|| !is_numeric(substr($_SESSION['studentId'],2,5))){
-$_SESSION['signinError'] = true;
-}
+		$_SESSION['signinError'] = true;
+	}
+
+}//end if last page...
 
 //go back to signin if error was found
 if($_SESSION['signinError'] == true){
- 	header('Location: StudentSignin.php');
+	header('Location: StudentSignin.php');
 }
 //after this point, successful login
 
@@ -123,9 +144,9 @@ Students Typically either do individual or group appointment
 		$flName = $row['fName']." ".$row['lName'];
 		$advisors[$row['employeeId']] = $flName;
 	}
+
+	$studentId = $_SESSION['studentId'];
 	$_SESSION['advisors'] = $advisors;	
-
-
 	$_SESSION['groupEnabled'] = true;
 	$_SESSION['indEnabled'] = true;
 	$_SESSION['currentWeekEnabled'] = true;
@@ -179,7 +200,7 @@ Students Typically either do individual or group appointment
 			//$_SESSION['upcomingAppointment'] = $groupEndTime;
 			//must be 2 days, otherwise, they might try to change their appointment
 			//and then realize they can't sign up for any times within 2 days
-			$groupEndMinusDay = date('Y-m-d H:i:s', strtotime(minusTwoBusinessDays(groupEndMinusDay)));
+			$groupEndMinusDay = date('Y-m-d H:i:s', strtotime(minusTwoBusinessDays($groupEndTime)));
 			if($groupEndMinusDay < $now){
 				$_SESSION['upcomingWithinDay'] = true;
 				//echo "$groupEndMinusDay $now<br>";

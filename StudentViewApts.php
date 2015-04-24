@@ -7,12 +7,12 @@ Class: CMSC331
 Project: Project 2
 File: StudentViewApts.php
 File Description: This page will only come up if the last page was StudentOptions.php 
-and "View Created Appointment" was created.
+and "View Created Appointment" was selected.
 */
 
 session_start();
 include('Proj2Head.html');
-include('../CommonMethods.php');
+include('CommonMethods.php');
 
 $fName = $_SESSION['fName'];
 
@@ -101,7 +101,7 @@ else{
 	
 	// Output for times of Past/Upcoming Appointments
 	
-	echo "$fName, here are the appointmnets you have created this semester. Today is $today<br><br>";
+	echo "$fName, here are the appointments you have created this semester. Today is $today<br><br>";
 	if($pastAptsLen>0){
 		?>
 		<table border = "3">
@@ -117,9 +117,6 @@ else{
 	 	<?php
 	
 		// For loop for $pastApts
-
-		///////////////////////////******************************///////////////
-		foreach($pastAdvisorInfoArray as $row)
 
 		for($i = 0; $i < $pastAptsLen; $i++){
 			
@@ -194,7 +191,7 @@ else{
 		} // end for loop
 		echo"</table>";
 	}
-echo "<br>";
+	echo "<br>";
 	
 } // End of big else statement
 

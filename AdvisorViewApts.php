@@ -12,7 +12,7 @@ and "View Created Appointment" was created.
 
 session_start();
 include('Proj2Head.html');
-include('../CommonMethods.php');
+include('CommonMethods.php');
 
 $fName = $_SESSION['fName'];
 

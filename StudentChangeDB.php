@@ -11,7 +11,7 @@ page was 'StudentAreYouSure.php' and was created.
 */
 
 session_start();
-include('CommonMethods.php');
+include('../CommonMethods.php');
 
 //info to delete
 $upcomingAdvisorId = $_SESSION['upcomingAdvisorId'];
@@ -38,10 +38,11 @@ $sql = "INSERT INTO `Advising_Appointments2` (`studentId`, `advisorId`, `dateTim
 			VALUES ('$studentId', '$changeAdvisorId', '$sqlChangeDateTime')";
 $rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 
-
+$_SESSION['showStudentOptionsMessage'] = true;
+$_SESSION['studentOptionsMessage'] = "You have successfully changed your appointment.";
 // Make last page equal this page.
 $_SESSION['lastPage'] = "StudentInsertDB.php";
 
 //header should come after setting last page, or else it won't reach that part of the code
-header('Location: index.php');
+header('Location: ValidateStudentSignin.php');
 ?>

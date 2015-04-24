@@ -18,36 +18,111 @@ $_SESSION['showStudentOptionsMessage'] = false;
 
 if($studentsChoice == 'createGroupAppointment'){
 	$_SESSION['studentsCreateAdvisor'] = 'GROUPAP';
-	header('Location: StudentCreateAppointment.php');
+	if($_SESSION['studentHasUpcomingAppointment']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"You cannot create a new appointment because you already have an upcoming appointment.";
+		header('Location: StudentOptions.php');
+	}
+	else if($_SESSION['studentHasPastAppointment']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"If you have had past appointments, you are only allowed to create individual appointments.";
+		header('Location: StudentOptions.php');
+	}
+	else{
+		//no errors
+		header('Location: StudentCreateAppointment.php');
+	}
 }
 
 elseif($studentsChoice == 'createIndividualAppointment'){
 	//from the advisor selection dropdown
 	$_SESSION['studentsCreateAdvisor'] = $createAdvisor;
-	header('Location: StudentCreateAppointment.php');
+	if($_SESSION['studentHasUpcomingAppointment']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"You cannot create a new appointment because you already have an upcoming appointment.";
+		header('Location: StudentOptions.php');
+	}
+	else{
+		header('Location: StudentCreateAppointment.php');
+	}
 }
-
-if($studentsChoice == 'changeToGroupAppointment'){
+elseif($studentsChoice == 'changeToGroupAppointment'){
 	$_SESSION['studentsChangeAdvisor'] = 'GROUPAP';
-	header('Location: StudentChangeAppointment.php');
+	if(!$_SESSION['studentHasUpcomingAppointment']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"You have no upcoming appointment to change.";
+		header('Location: StudentOptions.php');
+	}
+	else if($_SESSION['studentHasPastAppointment']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"If you have had a past appointment, you can only change to an individual appointment.";
+		header('Location: StudentOptions.php');
+	}
+	else if($_SESSION['upcomingWithinDay']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"You cannot change your appointment because it is 
+		 within two business days of today.";
+		header('Location: StudentOptions.php');
+	}
+	else{
+		header('Location: StudentChangeAppointment.php');
+	}
 }
-
 elseif($studentsChoice == 'changeToIndividualAppointment'){
 	//from the advisor selection dropdown
 	$_SESSION['studentsChangeAdvisor'] = $changeAdvisor;
-	header('Location: StudentChangeAppointment.php');
+	if(!$_SESSION['studentHasUpcomingAppointment']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"You have no upcoming appointment to change.";
+		header('Location: StudentOptions.php');
+	}
+	else if($_SESSION['upcomingWithinDay']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"You cannot change your appointment because it is 
+		 within two business days of today.";
+		header('Location: StudentOptions.php');
+	}
+	else{
+		header('Location: StudentChangeAppointment.php');
+	}
 }
 
 elseif($studentsChoice == 'viewAppointment'){
-	header('Location: StudentViewApts.php');
+	if(!$_SESSION['studentHasUpcomingAppointment'] && !$_SESSION['studentHasPastAppointment']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"You have no appointments to view at this time.";
+		header('Location: StudentOptions.php');
+	}
+	else{
+		header('Location: StudentViewApts.php');
+	}
 }
 
 elseif($studentsChoice == 'cancelAppointment'){
-	header('Location: StudentDeleteAppointment.php');
+	if(!$_SESSION['studentHasUpcomingAppointment']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"You have no upcoming appointments to cancel at this time.";
+		header('Location: StudentOptions.php');
+	}
+	else if($_SESSION['upcomingWithinDay']){
+		$_SESSION['showStudentOptionsMessage'] = true;
+		$_SESSION['studentOptionsMessage'] = 
+		"You cannot cancel your appointment because it is 
+		 within two business days of today";
+		header('Location: StudentOptions.php');
+	}
+	else{
+		header('Location: StudentDeleteAppointment.php');
+	}
 }
-
-elseif($studentsChoice == 'changeAppointment'){
-	header('Location: StudentChangeAppointment.php');
-}
-
 ?>

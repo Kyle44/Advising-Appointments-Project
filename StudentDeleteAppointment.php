@@ -64,7 +64,7 @@ echo"on $userFormatDate at $userFormatTime.<br>";
 echo"Would you would like to cancel this appointment?<br><br>";
 ?>
 <form action = 'StudentDeleteDB.php'>
-	<div class="button"><input type = 'submit' value='Cancel'></div>
+	<div class="button"><input type = 'submit' value='Cancel Appointment'></div>
 </form>
 
 <form action='StudentOptions.php'>

@@ -29,8 +29,8 @@ else{
 	// $debug to true would print out the query whenever one was executed, false wouldn't
 	$debug = false;
 	$COMMON = new Common($debug);
-	// Select the ENTIRE ROW for appointments from the database Advising_Appointments2 where the advisor's Id occurs
-	$sql = "SELECT * FROM `Advising_Appointments2` WHERE `advisorId` = '$advisorId'";
+	// Select the ENTIRE ROW for appointments from the database Advising_Appointments2 where the advisor's Id occurs or where Group Appointments occur
+	$sql = "SELECT * FROM `Advising_Appointments2` WHERE `advisorId` = '$advisorId' OR `advisorId` = 'GROUPAP'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 	
 
@@ -53,9 +53,6 @@ else{
 	// changed from mysql_fetch_row($rs) to mysql_fetch_assoc($rs).  Not sure how to use row['dateTime'] for every element.
 	while($row = mysql_fetch_assoc($rs)){
 			// Array of rows
-			
-
-
 			// if row['dateTime'] is before right now, put this in $pastApts array
 			if($row['dateTime'] < $dateAndTime){
 				// Push the date and time onto $pastApts array
@@ -98,7 +95,20 @@ else{
 	}
 
 
-	if($upcomingAptsLen > 0){	 
+
+	$today = time();
+	// starts today at 10am
+	$startDate = strtotime("10am", $today);
+	$endDate = strtotime("+14 days", $today);
+
+	while($startDate < $endDate){
+	
+	$dow = date("l", $startDate);
+	$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
+	
+
+	if($dow != "Saturday" && $dow != "Sunday"){
+		// create the table 
 		?>
 		<table border = "3">
 		<!--caption defined right after table tag-->
@@ -111,34 +121,121 @@ else{
 			<th>Student Id</th>
 		<tr>
 
-		<?php
-	
 
-	 
-		echo "Upcoming Appointments:<br>";
+		<?php	 
+		while($startDateTime < "12:00"){
+		// check every appointment for every time
 		for($j = 0; $j < $upcomingAptsLen; $j++){
 			$sqlFormatTime = $upcomingApts[$j];
-			$userFormatTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
-			echo $userFormatTime;
-			
+			// appointment date and time
+			$userFormatAptDateTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
+
+		// If the time is the same as the appointment, put it in the table
+		if($userFormatDateTime == $userFormatAptDateTime){
 			$studentfName = $upcomingStudentInfoArray[$j]['fName'];
 			$studentlName = $upcomingStudentInfoArray[$j]['lName'];
 			$studentEmail = $upcomingStudentInfoArray[$j]['studentEmail'];
 			$studentMajor = $upcomingStudentInfoArray[$j]['major'];
 			$studentId = $upcomingStudentInfoArray[$j]['studentId'];
-
-
-
 			echo "<tr>";	
-				echo "<td>$userFormatTime</td>";
+				echo "<td>$userFormatDateTime</td>";
 				echo "<td>$studentfName $studentlName</td>";
 				echo "<td>$studentEmail</td>";
 				echo "<td>$studentMajor</td>";
 				echo "<td>$studentId</td>";
 			echo"</tr>";
+			// if found, then break out of this for loop
+			break;
+		} // end if
+
+		// if none were found, put in blanks
+		if(j == $upcomingAptsLen - 1){
+			echo "<tr>";	
+				echo "<td>$userFormatDateTime</td>";
+				echo "<td></td>";
+				echo "<td></td>";
+				echo "<td></td>";
+				echo "<td></td>";
+			echo"</tr>";
+		} // end if
+
 		} // end for loop
-		echo"</table>";
-	}
+		// increase by 30 minutes
+		$startDate = strtotime("+30 minutes", $startDate);
+		// update values
+		$startDateTime = date('g:i', $startDate);
+		$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
+		} // end while
+
+
+		
+		$debug = false;
+		$COMMON = new Common($debug);
+		// Select the ENTIRE ROW for appointments from the database Advising_Appointments2 where the advisor's Id occurs
+		$sql = "SELECT * FROM `Advising_Appointments2` WHERE `advisorId` = 'GROUPAP'";
+		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+
+
+		// Group Appointments
+		while($startDateTime < "4:00"){
+			if($startDateTime == "1:30"){
+				echo "<tr>";	
+					echo "<td>$userFormatDateTime</td>";
+					echo "<td>Lunch Break</td>";
+					echo "<td></td>";
+					echo "<td></td>";
+					echo "<td></td>";
+				echo"</tr>";
+				$startDate = strtotime("+1 hour", $startDate);
+				// update values
+				$startDateTime = date('g:i', $startDate);
+				$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
+				// go to 2:30 group appointment now
+				continue;
+			} // end if
+			
+			for($j = 0; $j < $upcomingAptsLen; $j++){
+				$sqlFormatTime = $upcomingApts[$j];
+				// appointment date and time
+				$userFormatAptDateTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
+				if($userFormatDateTime == $userFormatAptDateTime){
+					echo "<tr>";	
+						echo "<td>$userFormatDateTime</td>";
+						echo "<td>Group Appointment</td>";
+						echo "<td></td>";
+						echo "<td></td>";
+						echo "<td></td>";
+					echo"</tr>";
+					// break for loop if this occurs
+					break;	
+				} // end if
+				if(j == $upcomingAptsLen - 1){
+					echo "<tr>";
+						echo "<td>$userFormatDateTime</td>";
+						echo "<td></td>";
+						echo "<td></td>";
+						echo "<td></td>";
+						echo "<td></td>";
+					echo"</tr>";
+				} // end if
+			} // end for loop
+			
+
+			// increase by 30 minutes
+			$startDate = strtotime("+30 minutes", $startDate);
+			// update values
+			$startDateTime = date('g:i', $startDate);
+			$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
+		} // end while
+	} // end if
+	// next day
+	$startDate = strtotime("+1 day", $startDate);
+	$startDate = strtotime("10am", $startDate);
+	// update values
+	$startDateTime = date('g:i', $startDate);
+	$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
+	echo"</table>";
+	} // end while
 	echo "<br>";
 	
 } // End of big else statement

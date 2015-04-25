@@ -34,9 +34,6 @@ else{
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 	
 
-
-	// set the default timezone to use.
-	//date_default_timezone_set('EST');
 	// Not sure if this works, but I believe this will give me the date and time of right now. Changed h:i:s to H:i:s.
 	$dateAndTime = date('Y-m-d H:i:s');
 	$today = date('l, m/d/Y, g:i A');
@@ -73,8 +70,7 @@ else{
 		
 
 	$upcomingAptsLen = count($upcomingApts);
-	//echo"$upcomingAptsLen <br>";
-	
+	//echo"$upcomingAptsLen <br>";	
 	
 	// Output for times of Past/Upcoming Appointments
 	
@@ -97,9 +93,11 @@ else{
 
 
 	$today = time();
-	// starts today at 10am
-	$startDate = strtotime("10am", $today);
+	// starts today at 8am
+	$startDate = strtotime("8am", $today);
 	$endDate = strtotime("+14 days", $today);
+	$startDateTime = date('g:i', $startDate);
+	
 
 	while($startDate < $endDate){
 	
@@ -123,15 +121,16 @@ else{
 
 
 		<?php	 
-		while($startDateTime < "12:00"){
+		for($i = 0; $i < 8; $i++){
+
 		// check every appointment for every time
 		for($j = 0; $j < $upcomingAptsLen; $j++){
 			$sqlFormatTime = $upcomingApts[$j];
 			// appointment date and time
 			$userFormatAptDateTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
-
-		// If the time is the same as the appointment, put it in the table
+			// If the time is the same as the appointment, put it in the table
 		if($userFormatDateTime == $userFormatAptDateTime){
+			echo"Appointment made at $startDateTime <br>";
 			$studentfName = $upcomingStudentInfoArray[$j]['fName'];
 			$studentlName = $upcomingStudentInfoArray[$j]['lName'];
 			$studentEmail = $upcomingStudentInfoArray[$j]['studentEmail'];
@@ -149,7 +148,7 @@ else{
 		} // end if
 
 		// if none were found, put in blanks
-		if(j == $upcomingAptsLen - 1){
+		if($j == $upcomingAptsLen - 1){
 			echo "<tr>";	
 				echo "<td>$userFormatDateTime</td>";
 				echo "<td></td>";
@@ -165,7 +164,7 @@ else{
 		// update values
 		$startDateTime = date('g:i', $startDate);
 		$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
-		} // end while
+		} // end for loop
 
 
 		
@@ -209,7 +208,7 @@ else{
 					// break for loop if this occurs
 					break;	
 				} // end if
-				if(j == $upcomingAptsLen - 1){
+				if($j == $upcomingAptsLen - 1){
 					echo "<tr>";
 						echo "<td>$userFormatDateTime</td>";
 						echo "<td></td>";
@@ -229,12 +228,14 @@ else{
 		} // end while
 	} // end if
 	// next day
+	
+	$startDate = strtotime("8am", $startDate);
 	$startDate = strtotime("+1 day", $startDate);
-	$startDate = strtotime("10am", $startDate);
 	// update values
 	$startDateTime = date('g:i', $startDate);
 	$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
 	echo"</table>";
+	echo "<br>";
 	} // end while
 	echo "<br>";
 	

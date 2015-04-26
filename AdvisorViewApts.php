@@ -108,12 +108,15 @@ else{
 
 
 	if($dow != "Saturday" && $dow != "Sunday"){
-		echo"                    $userFormatDate";
+		//echo"                    $userFormatDate";
 		// create the table 
 		?>
 		<table border = "3">
 		<!--caption defined right after table tag-->
-		
+		<!--easy way to get the caption (or any html tag) to include a php variable below:-->
+		<?php 
+		echo"<caption>$userFormatDate</caption>"; 
+		?>
 		<tr>
 			<th>Time</th>
 			<th>Student</th>

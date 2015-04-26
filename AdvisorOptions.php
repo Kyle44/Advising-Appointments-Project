@@ -26,13 +26,13 @@ $viewEnabled = $_SESSION['viewEnabled'];
 <div class="form">
 <form action = 'AdvisorOptionHeaders.php' method = 'post' name = 'selectOption'>
 <input type = 'radio' name = 'rb_option' value = 'selectAppointment' checked> Select Appointment<br>
-<input type = 'radio' name = 'rb_option' value = 'viewAppointment'> View Appointment
+<input type = 'radio' name = 'rb_option' value = 'viewAppointment'> View Schedule
 <?php
 echo "<select name='sel_advisor'>";
-foreach($advisors as $advisorId=>$advisorName){
+foreach($advisors as $advisorsId=>$advisorName){
 	if($advisorName != 'Group Advising'){
-		echo"<option value = '$advisorId'";
-	 	if($_SESSION['selectedAdvisor'] == $advisorId){
+		echo"<option value = '$advisorsId'";
+	 	if($advisorId == $advisorsId || $_SESSION['advisorView'] == $advisorsId){
 			echo "selected";
 		}
 		echo ">";

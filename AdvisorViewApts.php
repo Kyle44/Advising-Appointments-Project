@@ -103,14 +103,17 @@ else{
 	
 	$dow = date("l", $startDate);
 	$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
-	
+	$userFormatDate = date('l, m/d/Y', $startDate);
+	$userFormatTime = date('g:i A', $startDate);
+
 
 	if($dow != "Saturday" && $dow != "Sunday"){
+		echo"                    $userFormatDate";
 		// create the table 
 		?>
 		<table border = "3">
 		<!--caption defined right after table tag-->
-		<caption> Upcoming Appointments </caption>
+		
 		<tr>
 			<th>Time</th>
 			<th>Student</th>
@@ -130,14 +133,13 @@ else{
 			$userFormatAptDateTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
 			// If the time is the same as the appointment, put it in the table
 		if($userFormatDateTime == $userFormatAptDateTime){
-			echo"Appointment made at $startDateTime <br>";
 			$studentfName = $upcomingStudentInfoArray[$j]['fName'];
 			$studentlName = $upcomingStudentInfoArray[$j]['lName'];
 			$studentEmail = $upcomingStudentInfoArray[$j]['studentEmail'];
 			$studentMajor = $upcomingStudentInfoArray[$j]['major'];
 			$studentId = $upcomingStudentInfoArray[$j]['studentId'];
 			echo "<tr>";	
-				echo "<td>$userFormatDateTime</td>";
+				echo "<td>$userFormatTime</td>";
 				echo "<td>$studentfName $studentlName</td>";
 				echo "<td>$studentEmail</td>";
 				echo "<td>$studentMajor</td>";
@@ -150,7 +152,7 @@ else{
 		// if none were found, put in blanks
 		if($j == $upcomingAptsLen - 1){
 			echo "<tr>";	
-				echo "<td>$userFormatDateTime</td>";
+				echo "<td>$userFormatTime</td>";
 				echo "<td></td>";
 				echo "<td></td>";
 				echo "<td></td>";
@@ -164,6 +166,8 @@ else{
 		// update values
 		$startDateTime = date('g:i', $startDate);
 		$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
+		$userFormatDate = date('l, m/d/Y', $startDate);
+		$userFormatTime = date('g:i A', $startDate);
 		} // end for loop
 
 
@@ -179,7 +183,7 @@ else{
 		while($startDateTime < "4:00"){
 			if($startDateTime == "1:30"){
 				echo "<tr>";	
-					echo "<td>$userFormatDateTime</td>";
+					echo "<td>$userFormatTime</td>";
 					echo "<td>Lunch Break</td>";
 					echo "<td></td>";
 					echo "<td></td>";
@@ -189,6 +193,8 @@ else{
 				// update values
 				$startDateTime = date('g:i', $startDate);
 				$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
+				$userFormatDate = date('l, m/d/Y', $startDate);
+				$userFormatTime = date('g:i A', $startDate);
 				// go to 2:30 group appointment now
 				continue;
 			} // end if
@@ -197,9 +203,10 @@ else{
 				$sqlFormatTime = $upcomingApts[$j];
 				// appointment date and time
 				$userFormatAptDateTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
+				
 				if($userFormatDateTime == $userFormatAptDateTime){
 					echo "<tr>";	
-						echo "<td>$userFormatDateTime</td>";
+						echo "<td>$userFormatTime</td>";
 						echo "<td>Group Appointment</td>";
 						echo "<td></td>";
 						echo "<td></td>";
@@ -210,7 +217,7 @@ else{
 				} // end if
 				if($j == $upcomingAptsLen - 1){
 					echo "<tr>";
-						echo "<td>$userFormatDateTime</td>";
+						echo "<td>$userFormatTime</td>";
 						echo "<td></td>";
 						echo "<td></td>";
 						echo "<td></td>";
@@ -225,6 +232,8 @@ else{
 			// update values
 			$startDateTime = date('g:i', $startDate);
 			$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
+			$userFormatDate = date('l, m/d/Y', $startDate);
+			$userFormatTime = date('g:i A', $startDate);
 		} // end while
 	} // end if
 	// next day

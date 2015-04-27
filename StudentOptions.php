@@ -147,7 +147,7 @@ if($_SESSION['studentChoice'] == 'viewAppointment'){
 //||$hasPastAppointment || $hasUpcomingAppointment){//commented out for now
 echo " checked";
 }
-?> >View Created Appointment<br>
+?> >View Appointment Details<br>
 
 
 <!----------------------------------------------------------------------------->
@@ -162,7 +162,7 @@ if(!$hasUpcomingAppointment || $upcomingWithinDay){
 if($_SESSION['studentChoice'] == 'cancelAppointment'){
 echo "checked";
 }
- ?> >Cancel Created Appointment<br><br>
+ ?> >Cancel Upcoming Appointment<br><br>
 </div>
 <!------------------------------------------------------------------------------>
 

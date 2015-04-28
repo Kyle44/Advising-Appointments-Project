@@ -23,6 +23,7 @@ $advisorName = $_SESSION['advisors'][$advisorId];
 //var_dump($_SESSION['studentsAdvisor']);
 //echo "$advisorId<br>";
 $fName = $_SESSION['fName'];
+$major = $_SESSION['major'];
 
 echo "<div class='form-div'>";
 
@@ -47,13 +48,13 @@ if($_SESSION['currentWeekEnabled']){
 	else if($todayDOW == "Friday" || $todayDOW == "Saturday" || $todayDOW == "Sunday"){
 		$startDate = strtotime('Tuesday');
 	}
-	$endDate = strtotime("+1 week", $startDate);
+	$endDate = strtotime("+9 days", $startDate);
 }
 
 else{
 
 	$startDate = strtotime("next monday");
-	$endDate = strtotime("+1 week +1 day", $startDate);		
+	$endDate = strtotime("+10 days", $startDate);		
 }
 
 $sqlFormatStartDate = date("Y-m-d H:i:s",$startDate);
@@ -65,8 +66,19 @@ $debug = false;
 $COMMON = new Common($debug);
 
 //get available apts between start/end time with the previously selected advisor
-$sql = "SELECT * FROM Advising_Availability2 where `advisorId` = '$advisorId' 
-		AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'";
+if($advisorId == 'GROUPAP'){
+	//major matters for group, but not individual
+	$sql = "SELECT * FROM Advising_Availability2 
+			WHERE `advisorId` = '$advisorId' 
+			AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'
+			AND `major` = '$major'";
+}
+else{
+	$sql = "SELECT * FROM Advising_Availability2 
+			WHERE `advisorId` = '$advisorId' 
+			AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'";
+}
+
 $rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
 
 //push into array (all of the appointments in Advising_Avialability w/i that
@@ -88,6 +100,7 @@ foreach($allPotentialAppointmentArray as $row){
 				FROM `Advising_Appointments2` 
 				WHERE `dateTime`='$sqlFormatTime'
  				AND `advisorId` = '$advisorId'";
+				//AND `major` = '$major'";/////////////////////Need to test this
 
   	$rs = $COMMON->executeQuery($sql,$SERVER["SCRIPT_NAME"]);
   

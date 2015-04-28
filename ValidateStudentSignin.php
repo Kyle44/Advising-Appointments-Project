@@ -13,6 +13,7 @@ session_start();
 include('../CommonMethods.php');
 
 //returns in sql format
+//this function won't be used any more
 function minusTwoBusinessDays($day){
 	//echo"Day input: $day<br>";
 	$day = date('Y-m-d 23:59:59',strtotime($day));
@@ -200,7 +201,7 @@ Students Typically either do individual or group appointment
 			//$_SESSION['upcomingAppointment'] = $groupEndTime;
 			//must be 2 days, otherwise, they might try to change their appointment
 			//and then realize they can't sign up for any times within 2 days
-			$groupEndMinusDay = date('Y-m-d H:i:s', strtotime(minusTwoBusinessDays($groupEndTime)));
+			$groupEndMinusDay = date('Y-m-d H:i:s', strtotime('-1 days',strtotime($groupEndTime)));
 			if($groupEndMinusDay < $now){
 				$_SESSION['upcomingWithinDay'] = true;
 				//echo "$groupEndMinusDay $now<br>";
@@ -245,12 +246,10 @@ Students Typically either do individual or group appointment
 		//$_SESSION['upcomingAppointment'] = $latestIndAptEndTime;
 		$_SESSION['studentHasUpcomingAppointment'] = true;
 		//echo"$latestIndAptEndTime<br>";
-		$indEndMinusDay = date("Y-m-d H:i:s", strtotime(minusTwoBusinessDays($latestIndAptEndTime)));
+		$indEndMinusDay = date("Y-m-d H:i:s", strtotime('-1 days', strtotime($latestIndAptEndTime)));
 		//echo"$latestIndAptEndTime<br>";
-		//echo"indendminusDay: $indEndMinusDay<br>";
-		///////////////to do: HasUpcoming shouldn't be end time,
-		///////////////       make some options booleans better 
-		//echo "$indEndMinusDay<br>";	
+		
+ 		//echo "$indEndMinusDay<br>";	
 		if($indEndMinusDay < $now){
 				//echo "$indEndMinusDay $now<br>";
 	

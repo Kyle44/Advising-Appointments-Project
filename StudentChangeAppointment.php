@@ -18,6 +18,7 @@ $studentId = $_SESSION['studentId'];
 $changeAdvisorId = $_SESSION['studentsChangeAdvisor'];
 $changeAdvisorName = $_SESSION['advisors'][$changeAdvisorId];
 $fName = $_SESSION['fName'];
+$major = $_SESSION['major'];
 $now = date("Y-m-d H:i:s");
 
 echo "<div class='form-div'>";
@@ -42,13 +43,13 @@ if($_SESSION['currentWeekEnabled']){
 	else if($todayDOW == "Friday" || $todayDOW == "Saturday" || $todayDOW == "Sunday"){
 		$startDate = strtotime('Tuesday');
 	}
-	$endDate = strtotime("+1 week", $startDate);
+	$endDate = strtotime("+9 days", $startDate);
 }
 
 else{
 
 	$startDate = strtotime("next monday");
-	$endDate = strtotime("+1 week +1 day", $startDate);		
+	$endDate = strtotime("+10 days", $startDate);		
 }
 
 $sqlFormatStartDate = date("Y-m-d H:i:s",$startDate);
@@ -78,8 +79,17 @@ while($row = mysql_fetch_assoc($rs)){
 
 
 //get available apts between start/end time with the previously selected advisor
-$sql = "SELECT * FROM Advising_Availability2 where `advisorId` = '$changeAdvisorId' 
-		AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'";
+if($changeAdvisorId == 'GROUPAP'){
+	$sql = "SELECT * FROM Advising_Availability2 
+			WHERE `advisorId` = '$changeAdvisorId' 
+			AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'
+			AND `major` = '$major'";
+}
+else{
+$sql = "SELECT * FROM Advising_Availability2 
+		WHERE `advisorId` = '$changeAdvisorId' 
+		AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'";	
+}
 $rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
 
 //push into array (all of the appointments in Advising_Avialability w/i that
@@ -97,10 +107,14 @@ foreach($allPotentialAppointmentArray as $row){
 	$sqlFormatTime = $row["dateTime"];
 	$numSlots = $row["numSlots"];
 	//$advisorId = $row["advisorId"];
-	$sql = "SELECT COUNT(*) as totalno 
-				FROM `Advising_Appointments2` 
-				WHERE `dateTime`='$sqlFormatTime'
- 				AND `advisorId` = '$changeAdvisorId'";
+
+	
+	
+		$sql = "SELECT COUNT(*) as totalno 
+					FROM `Advising_Appointments2` 
+					WHERE `dateTime`='$sqlFormatTime'
+ 					AND `advisorId` = '$changeAdvisorId'";
+					
 
   	$rs = $COMMON->executeQuery($sql,$SERVER["SCRIPT_NAME"]);
   

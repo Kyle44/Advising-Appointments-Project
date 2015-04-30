@@ -30,22 +30,6 @@ else{
 <div class="form-title"> Advisor Signin<br></div>
 <form action='ValidateAdvisorSignin.php' method='post' name='login'>
 	<div class="form">
-	First Name: 	
-					<input type='text' name='fName' <?php echo "value='$fName'"?>><br>
-	</div>
-	<div class="form">
-	Last Name:  	
-					<input type='text' name='lName' <?php echo "value='$lName'"?>><br>
-	</div>
-	<div class="form">
-  	Phone Number:	
-					<input type='text' name='advisorPhoneNumber' <?php echo "value='$advisorPhoneNumber'"?>><br>
-	</div>
-	<div class="form">
-	Advisor Email:	
-					<input type='text' name='advisorEmail' <?php echo "value='$advisorEmail'"?>><br>
-	</div>
-	<div class="form">
   	Advisor ID:		
 					<input type='text' name='advisorId' <?php echo "value='$advisorId'"?>><br>
 	</div>
@@ -54,9 +38,7 @@ else{
 
 if($signinError){
 		//error message in red font
-   		echo "<p><font color='#ff0000' > Please make sure all fields are filled, the first letter of<br> 
-										first/last name is capitalized, the email has valid format,and the <br> 
-										id format is two capital letters followed by five numbers.</p>";	
+   		echo "<p><font color='#ff0000' > Please make sure ID format is two capital letters followed by five numbers as well as a valid ID.</p>";	
 }
 ?>
 

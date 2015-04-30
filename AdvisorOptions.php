@@ -13,10 +13,8 @@ appointment, or delete an appointment.
 
 session_start();
 include('Proj2Head.html');
-$fName = $_SESSION['fName'];
 $advisorId = $_SESSION['advisorId'];
 $advisors = $_SESSION['advisors'];
-$viewEnabled = $_SESSION['viewEnabled'];
 //var_dump($_SESSION['advisors']);
 ?>
 
@@ -25,8 +23,8 @@ $viewEnabled = $_SESSION['viewEnabled'];
 <div class="form-title">Please choose an option:<br></div>
 <div class="form">
 <form action = 'AdvisorOptionHeaders.php' method = 'post' name = 'selectOption'>
-<input type = 'radio' name = 'rb_option' value = 'selectAppointment' checked> Select Appointment<br>
-<input type = 'radio' name = 'rb_option' value = 'viewAppointment'> View Schedule
+<input type = 'radio' name = 'rb_option' value = 'selectAppointment' checked> Create Appointments<br>
+<input type = 'radio' name = 'rb_option' value = 'viewAppointment'> View Schedules
 <?php
 echo "<select name='sel_advisor'>";
 foreach($advisors as $advisorsId=>$advisorName){
@@ -41,19 +39,6 @@ foreach($advisors as $advisorsId=>$advisorName){
 }
 echo "</select>";
 ?>
-<br>
-<input type = 'radio' name = 'rb_option' value = 'cancelAppointment'
-<?php if(!$viewEnabled){
-echo 'disabled';
-}
-?>
-> Cancel Created Appointment<br>
-<input type = 'radio' name = 'rb_option' value = 'changeAppointment'
-<?php if(!$viewEnabled){
-echo 'disabled';
-}
-?>
-> Change Created Appointment<br>
 
 <!--submit button-->
 <div class="button"><input type = 'submit' value = 'Next'></div>

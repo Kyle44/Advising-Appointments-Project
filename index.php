@@ -17,16 +17,7 @@ include('Proj2Head.html');
 
 <!--links-->
 
-<div class="one-third-nav"></div>
-<div class="two-third-nav">
-<div class="index-advisor-nav">
-<div class="nav-div"><a class="nav" href="AdvisorSignin.php">Advisor</a></div>
-</div>
-<div class="index-student-nav">
-<div class="nav-div"><a class="nav" href="StudentSignin.php">Student</a></div>
-</div>
-</div>
-<div class="three-third-nav"></div>
+
 <div class="intro">
 
 <img class="mascot" src="picture/TrueGrit.jpg" alt="UMBC Mascot" align="right">
@@ -53,6 +44,13 @@ be confused and to have an expectation going in when using this. This portion wi
 be confused and to have an expectation going in when using this.
 </div>
 
+
+<form action='AdvisorSignin.php' name='advisor'>
+<input type='submit' value ='Advisor Sign-In'>
+</form>
+<form action='StudentSignin.php' name='student'>
+<input type='submit' value ='Student Sign-In'>
+</form>
 
 <?php
 $_SESSION['lastPage'] = "index.php";

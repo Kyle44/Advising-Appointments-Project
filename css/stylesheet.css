@@ -8,43 +8,6 @@ body
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/* Intro info */
-.intro 
-{
-
-	width: 45%;
-	float: left;
-	padding-top: 1%;
-	padding-left: 2.5%;
-	padding-right: 2.5%;
-	margin-left: 25%;
-
-}
-
-/* More info */
-.content
-{	
-	
-	width: 45%;
-	float: left;
-	margin-top: 1%;
-	margin-left:27.5%;
-}
-
-/* Description */
-.description
-{
-	font-size: 30px;
-	margin-bottom: -0.5%;
-}
-
-/* Description */
-.form-title
-{
-	font-size: 30px;
-	margin-left: 20%;
-	margin-bottom: -0.5%;
-}
 
 /* Sets logo to be of a certain size */
 .logo 
@@ -52,8 +15,6 @@ body
 	margin-left: 10%;
 	height: 100%;
 }
-
-
 
 /* Sets mascot to be of a certain size */
 .mascot 
@@ -65,67 +26,96 @@ body
 	width: 50%;
 }
 
+/* Intro info */
+.intro 
+{
+	width: 45%;
+	float: left;
+	padding-top: 1%;
+	padding-left: 2.5%;
+	padding-right: 2.5%;
+	margin-left: 25%;
+}
+
+/* More info */
+.content
+{	
+	width: 45%;
+	float: left;
+	margin-top: 1%;
+	margin-left:27.5%;
+}
+
+/* Description */
+.description
+{
+	font-size: 30px;
+}
+
 .form-div
 {
 	float: left;
-	margin-left: 40%;
+	margin-left: 25%;
 	margin-top: 2.5%;
-	width: 30%;
+	width: 50%;
+}
+
+/* Description */
+.form-title
+{
+	float: left;
+	font-size: 30px;
+	margin-left: 25%;
+	width: 100%;
 }
 
 .form
 {
-    margin-left: 15%;
-	padding-right: 5%;
+
 }
 
 .button
 {
+
+}
+
+.DOW-form-div
+{
+	float: left;
 	margin-top: 2.5%;
-	margin-left: 35%;
+	margin-bottom: 2.5%;
+	width: 100%;
 }
 
-/* Nav div */
-.nav-div
+.DOW
 {
-
-}
-
-/* Advisor navigation div */
-.index-advisor-nav
-{
-	margin-left: 20%;
-	float: left;
-	height: 100%;
-	width: 25%;
-	border-left: 2px solid;
-	border-right: 2px solid;
-}
-
-
-/* Student navigation div */
-.index-student-nav
-{
-	margin-left: 10%;
-	float: left;
-	height: 100%;
-	width: 25%;
-	border-left: 2px solid;
-	border-right: 2px solid;
-	
-}
-
-/* Navigation link Style */
-a.nav
-{
-
-	text-decoration: none;
-	color: #000000;
 	font-size: 25px;
-
-
-
+	margin-bottom: 2.5%;
+	border-bottom: solid;
 }
+
+.individual
+{
+
+	padding-left: 5%;
+	float: left;
+	width: 47.5%;
+}
+
+.group
+{
+
+	float: left;
+	width: 47.5%;
+}
+
+.checkbox
+{
+	float: left;
+	width: 100%;
+}
+
+
 
 /* Container div setting into background */
 .background
@@ -197,32 +187,4 @@ a.nav
 	float: left;
 	border-bottom: solid;
 	background-color: #000000;
-}
-
-/* Sub part of Navigator */
-.one-third-nav
-{
-	width: 25%;
-	height: 4%;
-	float: left;
-	background-color: #FFCC00;
-}
-
-/* Main part of Navigator */
-.two-third-nav
-{
-	width: 50%;
-	height: 4%;
-	float: left;
-	background-color: #FFCC00;
-	
-}
-
-/* Sub part of Navigator */
-.three-third-nav
-{
-	width: 25%;
-	height: 4%;
-	float: left;
-	background-color: #FFCC00;
 }

@@ -71,7 +71,8 @@ if($advisorId == 'GROUPAP'){
 	$sql = "SELECT * FROM Advising_Availability2 
 			WHERE `advisorId` = '$advisorId' 
 			AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'
-			AND `major` = '$major'";
+			AND `major` = '$major'
+			OR `major` = 'All Majors'";
 }
 else{
 	$sql = "SELECT * FROM Advising_Availability2 

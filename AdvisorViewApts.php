@@ -42,6 +42,7 @@ else{
 
 	
 	// changed from mysql_fetch_row($rs) to mysql_fetch_assoc($rs).  Not sure how to use row['dateTime'] for every element.
+	$count = 0;
 	while($row = mysql_fetch_assoc($rs)){
 			// Array of rows
 			// if row['dateTime'] is before right now, put this in $pastApts array
@@ -58,11 +59,12 @@ else{
 				// Upcoming array info
 				array_push($upcomingRowArray, $row);
 				array_push($advisorNameArray, $row['advisorId']);
+				$count++;
 			} // end else statement
 	
 	} // end of while loop
 	
-		
+	$advisorNameArrayLen = count($advisorNameArray);
 	$upcomingAptsLen = count($upcomingApts);
 	//echo"$upcomingAptsLen <br>";	
 	
@@ -133,11 +135,12 @@ else{
 			} // end if
 		// check every appointment for every time
 		for($j = -1; $j < $upcomingAptsLen; $j++){
+	
 			$sqlFormatTime = $upcomingApts[$j];
 			// appointment date and time
 			$userFormatAptDateTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
 			// If the time is the same as the appointment, put it in the table
-		if($userFormatDateTime == $userFormatAptDateTime && $advisorNameArray[j] != 'GROUPAP'){
+		if($userFormatDateTime == $userFormatAptDateTime && $advisorNameArray[$j] != 'GROUPAP'){
 			$studentfName = $upcomingStudentInfoArray[$j]['fName'];
 			$studentlName = $upcomingStudentInfoArray[$j]['lName'];
 			$studentEmail = $upcomingStudentInfoArray[$j]['studentEmail'];
@@ -169,7 +172,7 @@ else{
 		
 		// if none were found, put in blanks
 		elseif($j == $upcomingAptsLen - 1){
-			echo "<tr>";	
+			echo "<tr>";
 				echo "<td>$userFormatTime</td>";
 				echo "<td></td>";
 				echo "<td></td>";

@@ -160,7 +160,7 @@ elseif($advisorsDecision == 'searchStudentID'){
 		header('Location: AdvisorOptions.php');	
 	}
 	else{
-		header'Location: AdvisorSearchID.php');
+		header('Location: AdvisorSearchID.php');
 	}
 	//check if in DB in next page
 
@@ -175,7 +175,7 @@ elseif($advisorsDecision == 'searchStudentlName'){
 		header('Location: AdvisorOptions.php');
 	}
 	else{
-		header'Location: AdvisorSearchlName.php');
+		header('Location: AdvisorSearchlName.php');
 	}
 }
 

@@ -69,20 +69,14 @@ else{
 					$numOccurrences[$time] = $count + 1;
 					// account for the new occurrence
 					$count++;
-					//////////////////////////////
-					echo"$time HERE <br>";
-					echo"$numOccurrences[$time]";
-					
+										
 				}
 				
 				else{
 					$numOccurrences[$time] = 1;
 					// now this dateTime has only one occurrence
 					$count = 1;
-					//////////////////////////////
-					echo"$time HERE <br>";
-					echo"$numOccurrences[$time]";
-					
+										
 				}
 				$lastRowDateTime = $row['dateTime'];
 			} // end else statement

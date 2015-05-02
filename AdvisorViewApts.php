@@ -42,7 +42,10 @@ else{
 
 	
 	// changed from mysql_fetch_row($rs) to mysql_fetch_assoc($rs).  Not sure how to use row['dateTime'] for every element.
-	$count = 0;
+	$numOccurrences = array();
+	$lastRowDateTime = 0;
+	// how many times an appointment occurs
+	$count = 1;
 	while($row = mysql_fetch_assoc($rs)){
 			// Array of rows
 			// if row['dateTime'] is before right now, put this in $pastApts array
@@ -54,17 +57,41 @@ else{
 			} // end if statement
 			
 			else{
+				$time = $row['dateTime'];
 				// Push the date and time onto $upcomingApts array
 				array_push($upcomingApts, $row['dateTime']);
 				// Upcoming array info
 				array_push($upcomingRowArray, $row);
 				array_push($advisorNameArray, $row['advisorId']);
-				$count++;
+
+				// another occurrence
+				if($lastRowDateTime == $row['dateTime']){
+					$numOccurrences[$time] = $count + 1;
+					// account for the new occurrence
+					$count++;
+					//////////////////////////////
+					echo"$time HERE <br>";
+					echo"$numOccurrences[$time]";
+					
+				}
+				
+				else{
+					$numOccurrences[$time] = 1;
+					// now this dateTime has only one occurrence
+					$count = 1;
+					//////////////////////////////
+					echo"$time HERE <br>";
+					echo"$numOccurrences[$time]";
+					
+				}
+				$lastRowDateTime = $row['dateTime'];
 			} // end else statement
 	
 	} // end of while loop
+		
 	
-	$advisorNameArrayLen = count($advisorNameArray);
+	
+
 	$upcomingAptsLen = count($upcomingApts);
 	//echo"$upcomingAptsLen <br>";	
 	
@@ -137,10 +164,15 @@ else{
 		for($j = -1; $j < $upcomingAptsLen; $j++){
 	
 			$sqlFormatTime = $upcomingApts[$j];
+			// comparable date that $numOccurrences array can use
+			$comparableDateTime = date('Y-m-d H:i:s', strtotime($sqlFormatTime));
+			
+			$numAppointments = $numOccurrences[$comparableDateTime];
+			//echo"comparable date time = $comparableDateTime <br> num appointments = $numAppointments <br>";
 			// appointment date and time
 			$userFormatAptDateTime = date('l, m/d/Y, g:i A', strtotime($sqlFormatTime));
-			// If the time is the same as the appointment, put it in the table
-		if($userFormatDateTime == $userFormatAptDateTime && $advisorNameArray[$j] != 'GROUPAP'){
+		// If the time is the same as the appointment, put it in the table
+		if($userFormatDateTime == $userFormatAptDateTime && $numAppointments > 1){
 			$studentfName = $upcomingStudentInfoArray[$j]['fName'];
 			$studentlName = $upcomingStudentInfoArray[$j]['lName'];
 			$studentEmail = $upcomingStudentInfoArray[$j]['studentEmail'];
@@ -156,6 +188,24 @@ else{
 			// if found, then break out of this for loop
 			break;
 		} // end if
+
+		elseif($userFormatDateTime == $userFormatAptDateTime && $advisorNameArray[$j] != 'GROUPAP'){
+			$studentfName = $upcomingStudentInfoArray[$j]['fName'];
+			$studentlName = $upcomingStudentInfoArray[$j]['lName'];
+			$studentEmail = $upcomingStudentInfoArray[$j]['studentEmail'];
+			$studentMajor = $upcomingStudentInfoArray[$j]['major'];
+			$studentId = $upcomingStudentInfoArray[$j]['studentId'];
+			echo "<tr>";	
+				echo "<td>$userFormatTime</td>";
+				echo "<td>$studentfName $studentlName</td>";
+				echo "<td>$studentEmail</td>";
+				echo "<td>$studentMajor</td>";
+				echo "<td>$studentId</td>";
+			echo"</tr>";
+			// if found, then break out of this for loop
+			break;
+		} // end elseif
+
 
 		elseif($userFormatDateTime == $userFormatAptDateTime){
 			$studentMajor = $upcomingStudentInfoArray[$j]['major'];

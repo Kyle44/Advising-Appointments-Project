@@ -13,8 +13,25 @@ appointment, or delete an appointment.
 
 session_start();
 include('Proj2Head.html');
+
+//variables to be used as default values
 $advisorId = $_SESSION['advisorId'];
 $advisors = $_SESSION['advisors'];
+$advisorView = $_SESSION['advisorView'];
+$searchStudentID = $_SESSION['searchStudentID'];
+$searchStudentlName = $_SESSION['searchStudentlName'];
+$cancelID = $_SESSION['cancelID'];
+$advisorReschedule = $_SESSION['advisorReschedule'];
+$rescheduleID = $_SESSION['rescheduleID'];
+$scheduleNewfName = $_SESSION['scheduleNewfName'];
+$scheduleNewlName = $_SESSION['scheduleNewlName'];
+$scheduleNewEmail = $_SESSION['scheduleNewEmail'];
+$scheduleNewMajor = $_SESSION['scheduleNewMajor'];
+$scheduleNewID = $_SESSION['scheduleNewID'];
+$scheduleExistingID = $_SESSION['scheduleExistingID'];
+
+
+
 //var_dump($_SESSION['advisors']);
 ?>
 
@@ -23,22 +40,121 @@ $advisors = $_SESSION['advisors'];
 <div class="form-title">Please choose an option:<br></div>
 <div class="form">
 <form action = 'AdvisorOptionHeaders.php' method = 'post' name = 'selectOption'>
-<input type = 'radio' name = 'rb_option' value = 'selectAppointment' checked> Create Appointments<br>
-<input type = 'radio' name = 'rb_option' value = 'viewAppointment'> View Schedules
+<input type = 'radio' name = 'rb_option' value = 'selectAppointment' 
+	<?php
+	if($_SESSION['advisorDecision'] == 'selectAppointment' ||
+	!isset($_SESSION['studentChoice'])){
+		echo 'checked';
+	}
+	?>
+> Select Appointment Times<br>
+<input type = 'radio' name = 'rb_option' value = 'viewAppointment'
+	<?php if($_SESSION['advisorDecision'] == 'viewAppointment'){echo 'checked';}?>
+> View Schedule
 <?php
-echo "<select name='sel_advisor'>";
+echo "<select name='sel_advisorView'>";
 foreach($advisors as $advisorsId=>$advisorName){
 	if($advisorName != 'Group Advising'){
 		echo"<option value = '$advisorsId'";
-	 	if($advisorId == $advisorsId || $_SESSION['advisorView'] == $advisorsId){
+	 	if($advisorId == $advisorsId){
 			echo "selected";
 		}
 		echo ">";
 	}
 	echo "$advisorName</option>";
 }
-echo "</select>";
+echo "</select><br><br>";
 ?>
+
+<!--Find student-->
+<input type = 'radio' name = 'rb_option' value = 'searchStudentID'
+	<?php if($_SESSION['advisorDecision'] == 'searchStudentID'){echo 'checked';}?>
+> Search For Student By ID:
+<input type = 'text' name = 'text_searchStudentID'<?php echo "value='$searchStudentID'"; ?>><br>
+<input type = 'radio' name = 'rb_option' value = 'searchStudentlName'
+	<?php if($_SESSION['advisorDecision'] == 'searchStudentlName'){echo 'checked';}?>
+> Search For Student By Last Name:
+<input type = 'text' name = 'text_searchStudentlName'<?php echo "value='$searchStudentlName'"; ?>><br><br>
+
+<!--Cancel appointment-->
+<input type = 'radio' name = 'rb_option' value = 'cancelAppointment'
+	<?php if($_SESSION['advisorDecision'] == 'cancelAppointment'){echo 'checked';}?>
+>Cancel Appointment<br>
+Student ID:<input type = 'text' name = 'text_cancelID'<?php echo "value='$cancelID'"; ?>><br><br>
+
+<!--Reschedule Appointment-->
+<input type = 'radio' name = 'rb_option' value = 'rescheduleToGroup'
+	<?php if($_SESSION['advisorDecision'] == 'rescheduleToGroup'){echo 'checked';}?>
+> Reschedule Student to Group Appointment<br>
+<input type = 'radio' name = 'rb_option' value = 'rescheduleToIndividual'
+	<?php if($_SESSION['advisorDecision'] == 'rescheduleToIndividual'){echo 'checked';}?>
+> Reschedule Student to Individual Appointment<br>
+<?php
+echo "Advisor:<select name='sel_advisorReschedule'>";
+foreach($advisors as $advisorsId=>$advisorName){
+	if($advisorName != 'Group Advising'){
+		echo"<option value = '$advisorsId'";
+		if($advisorId == $advisorsId){
+			echo "selected";
+		}
+		echo '>';
+	}
+	echo "$advisorName</option>";
+}
+echo "</select><br>";
+?>
+Student ID:<input type = 'text' name = 'text_rescheduleID'<?php echo "value='$rescheduleID'"; ?>><br><br><br>
+
+<!--Schedule Appointment-->
+<input type = 'radio' name = 'rb_option' value = 'scheduleGroup'
+	<?php if($_SESSION['advisorDecision'] == 'scheduleGroup'){echo 'checked';}?>
+> Schedule Student For Group Appointmnet<br>
+<input type = 'radio' name = 'rb_option' value = 'scheduleIndividual'
+	<?php if($_SESSION['advisorDecision'] == 'scheduleIndividual'){echo 'checked';}?>
+> Schedule Student For Individual Appointmnet<br>
+<?php
+echo "Advisor:<select name='sel_advisorSchedule'>";
+foreach($advisors as $advisorsId=>$advisorName){
+	if($advisorName != 'Group Advising'){
+		echo"<option value = '$advisorsId'";
+		if($advisorId == $advisorsId){
+			echo "selected";
+		}
+		echo">";
+	}
+	echo "$advisorName</option>";
+}
+echo "</select><br><br>";
+?>
+
+For the student you're scheduling an apointment for, please enter either a new student's 
+information, or an existing student's ID:<br><br>
+New Student's Information:<br>
+Student First Name:	 <input type='text' name='text_scheduleNewfName'<?php echo "value='$scheduleNewfName'"; ?>><br>
+Student Last Name: 	<input type='text' name='text_scheduleNewlName'<?php echo "value='$scheduleNewlName'"; ?>><br>
+Student Major: 		<select name='sel_scheduleNewMajor'>
+	 						<option value='Undecided'<?php if($scheduleNewMajor == 'Undecided'){echo"selected";} ?>>Undecided</option>
+  							<option value='Computer Science'<?php if($scheduleNewMajor == 'Computer Science'){echo"selected";} ?>>Computer Science</option>
+  							<option value='Computer Engineering'<?php if($scheduleNewMajor == 'Computer Engineering'){echo"selected";} ?>>Computer Engineering</option>
+  							<option value='Mechanical Engineering'<?php if($scheduleNewMajor == 'Mechanical Engineering'){echo"selected";} ?>>Mechanical Engineering</option>
+  							<option value='Chemical Engineering' <?php if($scheduleNewMajor == 'Chemical Engineering'){echo"selected";} ?>>Chemical Engineering</option>
+  						</select><br>
+Student Email:		<input type='text' name='text_scheduleNewEmail'<?php echo "value='$scheduleNewEmail'"; ?>><br>
+Student ID:			<input type='text' name='text_scheduleNewID'<?php echo "value='$scheduleNewID'"; ?>><br><br>
+
+Existing Student's Information:<br>
+Student ID:			<input type='text' name='text_scheduleExistingID'<?php echo "value='$scheduleExistingID'"; ?>><br><br>
+
+
+<!--THE MESSAGE, if there is one...Needs some styling, but I'm lazy  (:@) -->
+
+<?php
+if($_SESSION['showAdvisorOptionsMessage']){
+	$message = $_SESSION['advisorOptionsMessage'];
+	echo "$message <br><br>";
+}
+?>
+
 
 <!--submit button-->
 <div class="button"><input type = 'submit' value = 'Next'></div>

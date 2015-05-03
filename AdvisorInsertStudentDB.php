@@ -62,8 +62,7 @@ $sql = "INSERT INTO `Advising_Appointments2` (`studentId`, `advisorId`, `dateTim
 		VALUES ('$studentId', '$advisorId', '$sqlDateTime')";
 $rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 
-$_SESSION['showAdvisorOptionsMessage'] = true;
-$_SESSION['AdvisorOptionsMessage'] = "You have successfully created an appointment.";
+
 $_SESSION['lastPage'] = 'AdvisorInsertStudentDB.php';
 
 $_SESSION['showAdvisorOptionsMessage'] = true;

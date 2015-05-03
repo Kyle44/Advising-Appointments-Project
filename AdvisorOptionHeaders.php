@@ -123,7 +123,7 @@ function checkStudentAppointments($studentId){
 		}
 		else{
 			$_SESSION['studentHasUpcomingAppointment'] = true;
-			if($row['dateTime'] < date('Y-m-d h:i:s',strtotime('+1 days', strtotime($now)))){
+			if($row['dateTime'] < date('Y-m-d H:i:s',strtotime('+1 days', strtotime($now)))){
 				$_SESSION['upcomingWithinDay'] = true;
 			} 
 		}
@@ -235,7 +235,15 @@ elseif($advisorsDecision == 'cancelAppointment'){
 	}
 	else{
 		checkStudentAppointments($cancelID);
-		header('Location: AdvisorCancelAppointment.php');
+		if(!$_SESSION['studentHasUpcomingAppointment']){
+			$_SESSION['showAdvisorOptionsMessage'] = true;
+			$_SESSION['advisorOptionsMessage'] = 
+			'Error: The student has no upcoming appointments to cancel at this time.';
+			header('Location: AdvisorOptions.php');
+		}
+		else{
+			header('Location: AdvisorCancelAppointment.php');
+		}
 	}
 
 }
@@ -255,7 +263,15 @@ elseif($advisorsDecision == 'rescheduleToGroup' || $advisorsDecision == 'resched
 	}
 	else{
 		checkStudentAppointments($rescheduleID);
-		header('Location: AdvisorChangeAppointment.php');
+		if(!$_SESSION['studentHasUpcomingAppointment']){
+			$_SESSION['showAdvisorOptionsMessage'] = true;
+			$_SESSION['advisorOptionsMessage'] = 
+			'Error: The student has no upcoming appointments to change at this time.';
+			header('Location: AdvisorOptions.php');
+		}
+		else{
+			header('Location: AdvisorRescheduleAppointment.php');
+		}
 	}
 
 }
@@ -288,6 +304,18 @@ elseif($advisorsDecision == 'scheduleGroup' || $advisorDecision = 'scheduleIndiv
 		else{
 			checkStudentAppointments($scheduleExistingID);
 			header('Location: AdvisorScheduleAppointment.php');
+			if($_SESSION['studentHasUpcomingAppointment']){
+				$_SESSION['showAdvisorOptionsMessage'] = true;
+				$_SESSION['advisorOptionsMessage'] = 
+				"Error: The existing student with this ID already has an upcoming appointment, 
+				so you cannot create another one. However, you can reschedule or
+				cancel this student's appointment.<br><br>";
+				header('Location: AdvisorOptions.php');
+
+			}
+			else{
+				header('Location: AdvisorScheduleAppointment.php');
+			}
 		}
 	}
 	//if using new student
@@ -332,7 +360,8 @@ elseif($advisorsDecision == 'scheduleGroup' || $advisorDecision = 'scheduleIndiv
 		}
 		else{
 			checkStudentAppointments($scheduleNewID);
-			header('Location: AdvisorScheduleAppointment.php');
+			header('Location:AdvisorScheduleAppointment.php');
+			
 		}
 	}
 }

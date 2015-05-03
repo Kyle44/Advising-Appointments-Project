@@ -41,7 +41,7 @@ $rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 $_SESSION['showStudentOptionsMessage'] = true;
 $_SESSION['studentOptionsMessage'] = "You have successfully changed your appointment.";
 // Make last page equal this page.
-$_SESSION['lastPage'] = "StudentInsertDB.php";
+$_SESSION['lastPage'] = "StudentChangeDB.php";
 
 //header should come after setting last page, or else it won't reach that part of the code
 header('Location: ValidateStudentSignin.php');

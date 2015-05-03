@@ -105,9 +105,17 @@ function checkStudentAppointments($studentId){
 	//check for past/upcoming appointments for the student
 	$latestIndTime;
 	$sql = "SELECT * FROM Advising_Appointments2 WHERE `studentId` = '$studentId'";
-		$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
+	$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
+	
 	while($row = mysql_fetch_assoc($rs)){
-		
+		if($row['advisorId'] != 'GROUPAP'){
+				$latestIndTime = $row['dateTime'];
+				$thisMonday = date("Y-m-d H:i:s",strtotime("monday this week",strtotime($latestIndTime)));
+				//$thisSaturday = date("Y-m-d H:i:s",strtotime("saturday"));
+				if($thisMonday < $latestIndTime && $latestIndTime < $now){
+					$_SESSION['currentWeekEnabled'] = false;
+				}
+			}
 		if($row['dateTime'] < $now){
 			$_SESSION['studentHasPastAppointment'] = true;
 			//if they have a past appointment, they're not allowed to do group
@@ -118,14 +126,6 @@ function checkStudentAppointments($studentId){
 			if($row['dateTime'] < date('Y-m-d h:i:s',strtotime('+1 days', strtotime($now)))){
 				$_SESSION['upcomingWithinDay'] = true;
 			} 
-			if($row['advisorId'] != 'GROUPAP'){
-				$latestIndTime = $row['dateTime'];
-				$thisMonday = date("Y-m-d H:i:s",strtotime("monday this week",strtotime($latestIndTime)));
-				$thisSaturday = date("Y-m-d H:i:s",strtotime("saturday"));
-				if($thisMonday < $latestIndTime && $latestIndTime < $thisSaturday){
-					$_SESSION['currentWeekEnabled'] = false;
-				}
-			}
 		}
 				 
 	}
@@ -281,7 +281,7 @@ elseif($advisorsDecision == 'scheduleGroup' || $advisorDecision = 'scheduleIndiv
 		else if(errorCheckIDinDB($scheduleExistingID)){
 			$_SESSION['showAdvisorOptionsMessage'] = true;
 			$_SESSION['advisorOptionsMessage'] = 
-			'Error: The ID being used to schedule an appointment<br>
+			'Error: The ID being used to schedule an appointment
 			 with an existing student is not in the database.';
 			header('Location: AdvisorOptions.php');
 		}

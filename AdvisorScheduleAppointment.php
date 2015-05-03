@@ -58,9 +58,10 @@ else{
 	$studentEmail = $_SESSION['scheduleNewEmail'];
 	$studentId = $_SESSION['scheduleNewID'];
 }
-
+//never allow multiple upcoming appointments
 
 echo "<div class='form-div'>";
+
 
 //defining date range the student can select from
 //today's day of week
@@ -69,7 +70,6 @@ $todayDOW = date(l);
 
 //Now, the advisor should have power to
 //Override the student's time constraint 
-//Will check on next page, I guess
 //echo "$todayDOW";
 if($todayDOW != 'Saturday' && $todayDOW != 'Sunday'){
 	$startDate = strtotime(date('Y-m-d H:i:s'));
@@ -216,9 +216,6 @@ if($_SESSION['studentHasUpcomingAppointment'] ||
 	($_SESSION['studentHasPastAppointment'] && $advisorSchedule == 'GROUPAP')){
 	echo "Please consider the following information about this student before creating this appointment:<br><br>";
 	
-	if($_SESSION['studentHasUpcomingAppointment']){
-		echo "This student already has an upcoming appointment. <br><br>";
-	}
 	if(!$_SESSION['currentWeekEnabled']){
 		echo "This student has another individual appointment this week.<br><br>";
 	}
@@ -240,9 +237,14 @@ if(empty($availableAppointmentArray)){
 			Please choose a different advising option.<br>";
 	}
 }
+
+
 ?>
 <div class="button"><input type='submit' value = 'Create Appointment'<?php if($disableNext){echo "hidden";}?> ></div>
 	</form>
+<?php
+
+?>
 <form action='AdvisorOptions.php'>
 <div class="button"><input type='submit' value='Go Back'></div>
 </form>

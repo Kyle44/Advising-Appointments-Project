@@ -86,10 +86,18 @@ $sqlFormatEndDate = date("Y-m-d H:i:s",$endDate);
 //echo "Testing start and end date: $sqlFormatStartDate"."$sqlFormatEndDate<br>";
 
 //get available apts between start/end time with this advisor
-$sql = "SELECT * FROM Advising_Availability2 
+if($advisorId == 'GROUPAP'){
+	$sql = "SELECT * FROM Advising_Availability2 
 		WHERE `advisorId` = '$advisorSchedule' 
-		AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'";
-
+		AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'
+		AND (`major` = '$major'
+			OR `major` = 'All Majors')";
+}
+else{
+	$sql = "SELECT * FROM Advising_Availability2 
+			WHERE `advisorId` = '$advisorSchedule' 
+			AND `dateTime` BETWEEN '$sqlFormatStartDate' AND '$sqlFormatEndDate'";
+}
 
 $rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
 

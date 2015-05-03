@@ -67,7 +67,7 @@ elseif($studentsChoice == 'changeToGroupAppointment'){
 		$_SESSION['showStudentOptionsMessage'] = true;
 		$_SESSION['studentOptionsMessage'] = 
 		"You cannot change your appointment because it is 
-		 within two business days of today.";
+		 24 hours.";
 		header('Location: StudentOptions.php');
 	}
 	else{
@@ -87,7 +87,7 @@ elseif($studentsChoice == 'changeToIndividualAppointment'){
 		$_SESSION['showStudentOptionsMessage'] = true;
 		$_SESSION['studentOptionsMessage'] = 
 		"You cannot change your appointment because it is 
-		 within two business days of today.";
+		 within 24 hours.";
 		header('Location: StudentOptions.php');
 	}
 	else{
@@ -118,7 +118,7 @@ elseif($studentsChoice == 'cancelAppointment'){
 		$_SESSION['showStudentOptionsMessage'] = true;
 		$_SESSION['studentOptionsMessage'] = 
 		"You cannot cancel your appointment because it is 
-		 within two business days of today";
+		 wihin 24 hours.";
 		header('Location: StudentOptions.php');
 	}
 	else{

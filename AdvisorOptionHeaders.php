@@ -214,7 +214,7 @@ elseif($advisorsDecision == 'searchStudentID'){
 	elseif(errorCheckIDinDB($searchStudentID) && errorCheckNameInDB($searchStudentID)){
 		$_SESSION['showAdvisorOptionsMessage'] = true;
 		$_SESSION['advisorOptionsMessage'] = 
-			'The student with last name or ID $searchStudentID was not found.';
+			'The student with last name or ID '.$searchStudentID.' was not found.';
 		header('Location: AdvisorOptions.php');	
 	}
 	else{

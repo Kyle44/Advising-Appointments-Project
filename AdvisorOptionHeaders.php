@@ -45,6 +45,24 @@ function errorCheckIDinDB($ID){
 	}
 }
 
+
+function errorCheckNameInDB($name){
+	
+	//checking if the name is in Student_Info2
+	//instantiating common to execute queries
+	$debug = false;
+	$COMMON = new Common($debug);
+	$sql = "SELECT * FROM `Student_Info2` WHERE `lName` = '$name'";
+	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+	if(mysql_num_rows($rs) == 0){	
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+
 function errorCheckName($name){
 	if(strlen($name)==0 || !ctype_upper(substr($name, 0, 1))){
 		return true;
@@ -140,24 +158,18 @@ $advisorView = $_POST['sel_advisorView'];
 $advisorReschedule = $_POST['sel_advisorReschedule'];
 $advisorSchedule = $_POST['sel_advisorSchedule'];
 $_SESSION['advisorView'] = $advisorView;
-if($advisorsDecision == 'rescheduleToGroup'){
-	$_SESSION['advisorReschedule'] = 'GROUPAP';
-}
-else if($advisorsDecision == 'rescheduleToIndividual'){
+
+if($advisorsDecision == 'rescheduleAppointment'){
 	$_SESSION['advisorReschedule'] = $advisorReschedule;
 }
 
-if($advisorsDecision == 'scheduleGroup'){
-	$_SESSION['advisorSchedule'] = 'GROUPAP';
-}
-else if($advisorsDecision == 'scheduleIndividual'){
+else if($advisorsDecision == 'scheduleAppointment'){
 	$_SESSION['advisorSchedule'] = $advisorSchedule;
 }
 
 
 //text fields
 $searchStudentID = trim($_POST['text_searchStudentID']);
-$searchStudentlName = trim($_POST['text_searchStudentlName']);
 $cancelID = trim($_POST['text_cancelID']);
 $rescheduleID = trim($_POST['text_rescheduleID']);
 $scheduleNewfName = trim($_POST['text_scheduleNewfName']);
@@ -168,7 +180,6 @@ $scheduleNewID = trim($_POST['text_scheduleNewID']);
 $scheduleExistingID = trim($_POST['text_scheduleExistingID']);
 
 $_SESSION['searchStudentID'] = $searchStudentID;
-$_SESSION['searchStudentlName'] = $searchStudentlName;
 $_SESSION['cancelID'] = $cancelID;
 $_SESSION['rescheduleID'] = $rescheduleID;
 $_SESSION['scheduleNewfName'] = $scheduleNewfName;
@@ -193,31 +204,26 @@ elseif($advisorsDecision == 'viewAppointment'){
 
 elseif($advisorsDecision == 'searchStudentID'){
 	
-	if(errorCheckIDFormat($searchStudentID)){
+	if(errorCheckIDFormat($searchStudentID) && errorCheckName($searchStudentID)){
 		$_SESSION['showAdvisorOptionsMessage'] = true;
 		$_SESSION['advisorOptionsMessage'] = 
-			'Error: The ID being searched is blank or in an invalid format.';
+			'Error: The ID or last name being searched is blank
+			 or is in an invalid format';
+		header('Location: AdvisorOptions.php');	
+	}
+	elseif(errorCheckIDinDB($searchStudentID) && errorCheckNameInDB($searchStudentID)){
+		$_SESSION['showAdvisorOptionsMessage'] = true;
+		$_SESSION['advisorOptionsMessage'] = 
+			'The student with last name or ID $searchStudentID was not found.';
 		header('Location: AdvisorOptions.php');	
 	}
 	else{
-		header('Location: AdvisorSearchID.php');
+		header('Location: AdvisorSearchText.php');
 	}
 	//check if in DB in next page
 
 }
 
-elseif($advisorsDecision == 'searchStudentlName'){
-	
-	if(errorCheckName($searchStudentlName)){
-		$_SESSION['showAdvisorOptionsMessage'] = true;
-		$_SESSION['advisorOptionsMessage'] = 
-			'Error: The last name being searched is blank or in an invalid format.';
-		header('Location: AdvisorOptions.php');
-	}
-	else{
-		header('Location: AdvisorSearchlName.php');
-	}
-}
 
 elseif($advisorsDecision == 'cancelAppointment'){
 	

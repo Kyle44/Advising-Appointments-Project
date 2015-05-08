@@ -84,42 +84,6 @@ foreach($studentArray as $element){
 
 
 
-
-
-// Trying to make radio buttons for each student
-foreach($studentArray as $element){
-	?>
-	<input type = 'radio' name = 'rb_option' value = '$element'
-	<?php 
-	if($_SESSION['advisorDecision'] == '$element')
-		{echo 'checked';}
-	echo"$element";
-}
-
-
-
-
-
-
-
-// Pretty much a copy of the advisors next to view schedule from AdvisorOptions.php, not sure if perfect
-echo "<select name='sel_advisorView'>";
-foreach($advisors as $advisorsId=>$advisorName){
-	echo"<option value = '$advisorsId'";
-	if($advisorId == $advisorsId){
-		echo "selected";
-	}
-	echo ">";
-	echo "$advisorName</option>";
-}
-echo "</select><br><br>";
-?>
-
-
-
-
-
-
 <?php
 $_SESSION['lastPage'] = "AdvisorSearchText.php";
 include('Proj2Tail.html');

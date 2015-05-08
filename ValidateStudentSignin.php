@@ -12,105 +12,133 @@ File Description: Validation for student signin
 session_start();
 include('../CommonMethods.php');
 
-//returns in sql format
-//this function won't be used any more
-function minusTwoBusinessDays($day){
-	//echo"Day input: $day<br>";
-	$day = date('Y-m-d 23:59:59',strtotime($day));
-	//echo "$day<br>";
-	$dayMinusTwoDOW = date('l',strtotime('-2 days', strtotime($day)));
-	//echo "$dayMinusTwoDOW";
-	$dayMinusTwo = date('Y-m-d H:i:s', strtotime('-2 days', strtotime($day)));
-	//echo "$dayMinusTwo<br>";
-	//Day minus 2 is called from a business day that returns another business day
-	if($dayMinusTwoDOW == 'Monday' ||$dayMinusTwoDOW == 'Tuesday' ||$dayMinusTwoDOW == 'Wednesday'){
-		return($dayMinusTwo);
+//return true if not in
+function errorCheckIDinDB($ID){
+	
+	//checking if the id is in Student_Info2
+	//instantiating common to execute queries
+	$debug = false;
+	$COMMON = new Common($debug);
+	$sql = "SELECT * FROM `Student_Info2` WHERE `studentId` = '$ID'";
+	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+	if(mysql_num_rows($rs) == 0){	
+		//echo "ID $ID don't exists<br>";
+		return true;
+		
 	}
-	//day minus 2 is Sunday (called from a Tuesday)
-	else if($dayMinusTwoDOW == 'Sunday' || $dayMinusTwoDOW == 'Saturday'){
-		return(date('Y-m-d H:i:s', strtotime('-4 days',strtotime($day))));
-	}
-	//day minus 2 is Friday (called from a Sunday)
-	else if($dayMinusTwoDOW == 'Friday'){
-		return (date('Y-m-d H:i:s', strtotime('-3 days', strtotime($day))));
-	}
-	//day minus 2 is Thursday (called from a saturday)
 	else{
-		return ($dayMinusTwo);
+		//echo "ID $ID exist<br>";
+		return false;
 	}
 }
-//Testing minusTwoBusinessDays
-/*
-$day = minusTwoBusinessDays(date('l', strtotime("Monday")));
-echo date('l',strtotime($day));
-$day = minusTwoBusinessDays(date('l', strtotime("Tuesday")));
-echo date('l',strtotime($day));
-$day = minusTwoBusinessDays(date('l', strtotime("Wednesday")));
-echo date('l',strtotime($day));
-$day = minusTwoBusinessDays(date('l', strtotime("Thursday")));
-echo date('l',strtotime($day));
-$day = minusTwoBusinessDays(date('l', strtotime("Friday")));
-echo date('l',strtotime($day));
-$day = minusTwoBusinessDays(date('l', strtotime("Saturday")));
-echo date('l',strtotime($day));
-$day = minusTwoBusinessDays(date('l', strtotime("Sunday")));
-echo date('l',strtotime($day));
-
-//this has to be the ceiling of 2 days
-
-*/
-
 
 if($_SESSION['lastPage'] == 'StudentSignin.php'){
+
+	$_SESSION['lastPage'] = 'ValidateStudentSignin.php';
 	//add signin info to session
 	$_SESSION['fName'] = trim($_POST['fName']);
 	$_SESSION['lName'] = trim($_POST['lName']);
 	$_SESSION['major'] = trim($_POST['major']);
 	$_SESSION['studentEmail'] = trim($_POST['studentEmail']);
 	$_SESSION['studentId'] = trim($_POST['studentId']);
+	$_SESSION['returningStudentId'] =trim($_POST['returningStudentId']);
 
 	//$studentId = $_SESSION['studentId'];
 
 
 ///////////////////////////////Signin error checking///////////////////////
-	$_SESSION['signinError'] = false;
+	$signinError = false;
 	//error checking for blank fields
-	if(strlen($_SESSION['fName'])==0 || strlen($_SESSION['lName'])==0
-					||strlen($_SESSION['studentId'])==0
-					||strlen($_SESSION['studentEmail']) == 0){
-   		$_SESSION['signinError'] = true;
-	}
 
+	if	(
+	(strlen($_SESSION['returningStudentId']) > 0 &&
+		
+		(strlen($_SESSION['fName'])>0||
+		strlen($_SESSION['lName'])>0||
+		strlen($_SESSION['studentEmail']) >0||
+		strlen($_SESSION['studentId']) > 0)) ||
+
+	(strlen($_SESSION['returningStudentId']) == 0 &&
+		strlen($_SESSION['fName']) == 0 &&
+		strlen($_SESSION['lName']) == 0 &&
+		strlen($_SESSION['studentEmail']) == 0 &&
+		strlen($_SESSION['studentId']) == 0)
+		)
+	{
+		$_SESSION['showStudentSigninErrorMessage'] = true;
+		$_SESSION['studentSigninErrorMessage'] = 
+		"Please enter either your information (for returning students) or
+		your student ID (for returning students), but not none or both.";
+		$signinError = true;	
+		header('Location: StudentSignin.php');
+
+	}
+	elseif(strlen($_SESSION['returningStudentId']) >0){
+		if(strlen($_SESSION['returningStudentId'])!=7 || !ctype_upper(substr($_SESSION['returningStudentId'],0,2))
+										|| !is_numeric(substr($_SESSION['returningStudentId'],2,5))){
+			$_SESSION['showStudentSigninErrorMessage'] = true;
+			$_SESSION['studentSigninErrorMessage'] = 
+			"Please make sure your student ID is in the format: AB12345.";
+			$signinError = true;
+			header('Location: StudentSignin.php');
+		}	
+		elseif(errorCheckIDinDB($_SESSION['returningStudentId'])){
+			$_SESSION['showStudentSigninErrorMessage'] = true;
+			$_SESSION['studentSigninErrorMessage'] = 
+			"Error: the ID entered is not in the database. New Student?";
+			$signinError = true;	
+			header('Location: StudentSignin.php');
+		}
+		
+	}
 	//error checking for capital letters in f/lname
 	elseif(!ctype_upper(substr($_SESSION['fName'], 0, 1)) || 
 		!ctype_upper(substr($_SESSION['lName'], 0, 1))){
-    		$_SESSION['signinError'] = true;
+    	$_SESSION['showStudentSigninErrorMessage'] = true;
+		$_SESSION['studentSigninErrorMessage'] = 
+		"Please capitalize the first letter in your first/last name.";
+		$signinError = true;
+		header('Location: StudentSignin.php');
 	}
-
-	//error checking for valid email format:
-	//using regexes.Note: not checking .com,etc
-	$emailPattern = "/[^@]+@[^@]+/";
-	if (!preg_match($emailPattern, $_SESSION['studentEmail'])){
-		$_SESSION['signinError'] = true;
-	}
-
-	//error checking for valid id format: 7 chars, first 2 capital, last 5 numeric
-	elseif(strlen($_SESSION['studentId'])!=7 || !ctype_upper(substr($_SESSION['studentId'],0,2))
+	else{
+		//error checking for valid email format:
+		//using regexes.Note: not checking .com,etc
+		$emailPattern = "/[^@]+@[^@]+/";
+		if (!preg_match($emailPattern, $_SESSION['studentEmail'])){
+			$_SESSION['showStudentSigninErrorMessage'] = true;
+			$_SESSION['studentSigninErrorMessage'] = 
+			"Please make sure your email is in a valid format.";
+			$signinError = true;
+			header('Location: StudentSignin.php');
+		}
+		//error checking for valid id format: 7 chars, first 2 capital, last 5 numeric
+		elseif(strlen($_SESSION['studentId'])!=7 || !ctype_upper(substr($_SESSION['studentId'],0,2))
 										|| !is_numeric(substr($_SESSION['studentId'],2,5))){
-		$_SESSION['signinError'] = true;
+			$_SESSION['showStudentSigninErrorMessage'] = true;
+			$_SESSION['studentSigninErrorMessage'] = 
+			"Please make sure your student ID is in the format: AB12345.";
+			$signinError = true;
+			header('Location: StudentSignin.php');
+		}
+		elseif(!errorCheckIDinDB($_SESSION['studentId'])){
+			$_SESSION['showStudentSigninErrorMessage'] = true;
+			$_SESSION['studentSigninErrorMessage'] = 
+			"Error: The ID entered is already in the database.
+			Please enter it into the returning student section instead.";	
+			$signinError = true;
+			header('Location: StudentSignin.php');
+		}
+		
 	}
+
 
 }//end if last page...
 
-//go back to signin if error was found
-if($_SESSION['signinError'] == true){
-	header('Location: StudentSignin.php');
-}
 //after this point, successful login
 
 
 //now, process signin info to determine which options the student can choose////
-else{
+if(!$signinError){
 //I emailed Josh Abrams, and he said the following in response:
 /**
 Only allow one individual appointment per week, doesn't have to be the same advisor
@@ -130,6 +158,25 @@ Students Typically either do individual or group appointment
 	//instantiating common to execute queries
 	$debug = false;
 	$COMMON = new Common($debug);
+
+
+	//get rest of student's info if returning student
+	if(strlen($_SESSION['returningStudentId']) > 0){
+
+		$_SESSION['studentId'] = $_SESSION['returningStudentId'];
+		$studentId = $_SESSION['studentId'];
+		$sql = "SELECT * FROM Student_Info2 
+		WHERE `studentId` = '$studentId'";
+		$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
+		$row = mysql_fetch_assoc($rs);
+		//pull student's info from row	
+		$_SESSION['fName'] = $row['fName'];
+		$_SESSION['lName'] = $row['lName'];
+		$_SESSION['major'] = $row['major'];
+		$_SESSION['studentEmail'] = $row['studentEmail'];
+		
+	}
+
 
 	//get list of advisors from the db: Advisor_Info
 	//key: Id, value: fname lname 
@@ -266,57 +313,10 @@ Students Typically either do individual or group appointment
 		$_SESSION['currentWeekEnabled'] = false;			
 	}
 	
-	//for testing
-	//variables to test: groupEnabled, indEnabled,viewEnabled, currentWeekEnabled
-	/**********************
-		if($_SESSION['groupEnabled']){
-			echo "group is enabled<br>";
-		}
-		else{
-			echo "group is diabled<br>";
-		}
-
-		if($_SESSION['indEnabled']){
-			echo "ind is enabled<br>";
-		}
-		else{
-			echo "ind is diabled<br>";
-		}
-		if($_SESSION['viewEnabled']){
-			echo "view enabled<br>";
-		}
-		else{
-			echo "view disabled<br>";
-		}
-		if($_SESSION['studentHasUpcomingAppointment']){
-			echo "has upcoming<br>";
-		}
-		else{
-			echo "does not have upcoming<br>";
-		}
-		if($_SESSION['studentHasPastAppointment']){
-			echo"does have past appointment<br>";
-		}
-		else{
-			echo"does not have past appointment<br>";
-		}
-		if($_SESSION['upcomingWithinDay']){
-			echo "upcoming appointment within two days<br>";
-		}
-		else{
-			echo "upcoming appointment not within two days<br>";
-		}
-		if($_SESSION['currentWeekEnabled']){
-			echo "current week is enabled<br>";
-		}
-		else{
-			echo "current week is diabled<br>";
-		}
-
-	**********************/
 	$_SESSION['lastPage'] = 'ValidateStudentSignin.php';
+	
 	header('Location: StudentOptions.php');	
-}//end else
+}
 
 
 ?>

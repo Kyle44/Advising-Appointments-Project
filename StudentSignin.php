@@ -13,15 +13,15 @@ session_start();
 $_SESSION['showSudentOptionsMessage'] = false;
 
 include('Proj2Head.html');
-//info format user enters is checked in StudentOptions.php
-//if Student goes back from here, signin error will be unset
-if($_SESSION['signinError'] == true){
+//info format user enters is checked in ValidateStudentSiginin.php
+if($_SESSION['lastPage'] == 'ValidateStudentSignin.php'){
 	$signinError=true;
 	$fName = $_SESSION['fName'];
 	$lName = $_SESSION['lName'];
 	$major = $_SESSION['major'];
 	$studentId = $_SESSION['studentId'];
 	$studentEmail = $_SESSION['studentEmail'];
+	$returningStudentId = $_SESSION['returningStudentId'];
 }
 else{
 	$signinError = false;//
@@ -33,6 +33,8 @@ else{
 <!--output-->
 <div class="form-div">
 <div class="form-title">Student Signin<br></div>
+
+New Student
 <form action='ValidateStudentSignin.php' method='post' name='login'>
 <div class="form">
 	First Name: 	<input type='text' name='fName' <?php echo "value='$fName'"?>><br>
@@ -55,19 +57,26 @@ else{
 <div class="form">  	
 	Student ID:	<input type='text' name='studentId' <?php echo "value='$studentId'"?> ><br>
 </div>
+
+
+<br><br>
+Returning Student
+<div class="form">  	
+	Student ID:	<input type='text' name='returningStudentId' <?php echo "value='$returningStudentId'"?> ><br>
+</div>
+<br><br>
 <?php
 
-if($signinError){
+if($_SESSION['showStudentSigninErrorMessage']){
 		//error message in red font
-   		echo "<p><font color='#ff0000' > Please make sure all fields are filled, the first letter of<br> 
-										first/last name is capitalized, the email has valid format,and the <br> 
-										id format is two capital letters followed by five numbers.</p>";	
+   		echo $_SESSION['studentSigninErrorMessage']."<br><br>";	
 }
 ?>
 
 <!--signin button-->
 <div class="button"><input type='submit' value='Sign In'></div>
 </form>
+
 
 <!--back button-->
 <form action='index.php' name='goBack'>

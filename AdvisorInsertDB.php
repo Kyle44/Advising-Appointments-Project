@@ -5,47 +5,69 @@ Name: Nathaniel Baylon, Tommy Tran, Kyle Fritz
 Date: 03/29/2015
 Class: CMSC331
 Project: Project 2
-File: StudentInsertDB.php
-File Description: This page inserts information into Student_Info2 and Advising_Appointments2.  This will only come up if the last
-page was 'StudentAreYouSure.php' and was created.
+File: AdvisorInsertStudentDB.php
+File Description: Insert Student into db after creating appointment
 */
-
-//make sure header comments come after <?php, or else they show up as text on the page
 
 session_start();
 include('../CommonMethods.php');
+
+
+//instantiating COMMON
 $debug = false;
 $COMMON = new Common($debug);
 
-// Make sure we're coming from the right page
-if($_SESSION['lastPage'] != "AdvisorCreateAppointment.php"){
-	echo "Something went wrong!<br>";
+//student's info
+
+//if existing student
+if(strlen($_SESSION['scheduleExistingID'])!=0){
+	$studentId = $_SESSION['scheduleExistingID'];
+	$sql = "SELECT * FROM Student_Info2 
+		WHERE `studentId` = '$studentId'";
+	$rs = $COMMON->executeQuery($sql, $_SERVER['SCRIPT_NAME']);
+	$row = mysql_fetch_assoc($rs);
+	//pull student's info from row
+	
+	$studentfName = $row['fName'];
+	$studentlName = $row['lName'];
+	$studentMajor = $row['major'];
+	$studentEmail = $row['studentEmail'];
+	$studentId = $row['studentId'];
+}
+//new student
+else{
+	$studentfName = $_SESSION['scheduleNewfName'];
+	$studentlName = $_SESSION['scheduleNewlName'];
+	$studentMajor = $_SESSION['scheduleNewMajor'];
+	$studentEmail = $_SESSION['scheduleNewEmail'];
+	$studentId = $_SESSION['scheduleNewID'];
 }
 
-else{
-	$advisorId = $_SESSION['advisorId'];
-	$advisorName = $_SESSION['advisors'][$advisorId];
-	$schedule = $_SESSION['schedule'];
-	foreach ($schedule as $key => $value)
-	{
-		
-		if (isset($_POST[str_replace(" ","_", $key)]))
-		{
-			$numSlots = intval(($_POST[str_replace(" ","_", $value)]));
-			$sql = "INSERT INTO `Advising_Availability2` (`advisorId`, `dateTime`, `numSlots`) 
-			VALUES ('$advisorId', '$key', '$numSlots')";
-			$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
-		}
-		
-	}
-}
+$intDate = $_POST['date'];
+$intTime = $_POST[$intDate];
+$sqlDateTime = date('Y-m-d', $intDate)." ".date('H:i:s', $intTime);
+$advisorId = $_SESSION['advisorSchedule'];
+
+
+//insert all student data into Student_Info2
+$sql = "INSERT INTO `Student_Info2` (`studentId`, `fName`, `lName`, `major`, `studentEmail`) 
+		VALUES ('$studentId', '$studentfName', '$studentlName', '$studentMajor', '$studentEmail') 
+		ON DUPLICATE KEY UPDATE `studentId` = `studentId`";
+$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+
+$_SESSION['lastPage'] = 'AdvisorInsertStudentDB.php';
+
+//insert info into Advising_Appointments2
+$sql = "INSERT INTO `Advising_Appointments2` (`studentId`, `advisorId`, `dateTime`) 
+		VALUES ('$studentId', '$advisorId', '$sqlDateTime')";
+$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+
+
+$_SESSION['lastPage'] = 'AdvisorInsertStudentDB.php';
 
 $_SESSION['showAdvisorOptionsMessage'] = true;
-$_SESSION['advisorOptionsMessage'] = "You have successfully created an appointment.";
-// Make last page equal this page.
-$_SESSION['lastPage'] = "AdvisorInsertDB.php";
-
-//header should come after setting last page, or else it won't reach that part of the code
-header('Location: ValidateAdvisorSignin.php');
-
+$_SESSION['advisorOptionsMessage'] = 
+	'You have successfully scheduled an appointment.';		
+		
+header('Location: AdvisorOptions.php');
 ?>

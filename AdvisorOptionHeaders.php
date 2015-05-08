@@ -198,8 +198,14 @@ if($advisorsDecision == 'selectAppointment'){
 }
 
 elseif($advisorsDecision == 'viewAppointment'){
-	$today = date("Y-m-d 00:00:00");
-	$_SESSION['viewAptsDate'] = $today;
+	
+	if(date("l") == 'Saturday' || date("l") == 'Sunday'){
+		$_SESSION['viewAptsDate'] = date('Y-m-d 00:00:00', strtotime('Monday'));
+	}
+	else{
+
+		$_SESSION['viewAptsDate'] = date("Y-m-d 00:00:00");
+	}
 	header('Location: AdvisorViewApts.php');
 }
 

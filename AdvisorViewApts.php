@@ -14,18 +14,30 @@ include('Proj2Head.html');
 include('CommonMethods.php');
 $fName = $_SESSION['fName'];
 // Make sure we're coming from the right page
-if($_SESSION['lastPage'] != "AdvisorOptions.php"){
+if($_SESSION['lastPage'] != "AdvisorOptions.php" && $_SESSION['lastPage'] != "AdvisorViewApts.php"){
 	echo "Something went wrong!<br>";
 }
 else{
+
+	$advisors = $_SESSION['advisors'];
 	// $employeeId becomes whatever the Session variable of employeeId holds
-	$advisorId = $_SESSION['advisorView'];
+	
+	if($_SESSION['lastPage'] == 'AdvisorViewApts.php'){
+		$advisorId = $_POST['sel_advisorView'];
+	}
+	else{
+		$advisorId = $_SESSION['advisorId'];
+	}
+
+	//$advisorId = $_SESSION['advisorView'];
 	// $debug to true would print out the query whenever one was executed, false wouldn't
 	$debug = false;
 	$COMMON = new Common($debug);
 	// Select the ENTIRE ROW for appointments from the database Advising_Appointments2 where the advisor's Id occurs or where Group Appointments occur
 	$sql = "SELECT * FROM `Advising_Appointments2` WHERE `advisorId` = '$advisorId' OR `advisorId` = 'GROUPAP'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+	
+	
 	
 	// Not sure if this works, but I believe this will give me the date and time of right now. Changed h:i:s to H:i:s.
 	$dateAndTime = date('Y-m-d H:i:s');
@@ -41,7 +53,6 @@ else{
 	$advisorNameArray = array();
 
 	
-	// changed from mysql_fetch_row($rs) to mysql_fetch_assoc($rs).  Not sure how to use row['dateTime'] for every element.
 	$numOccurrences = array();
 	$lastRowDateTime = 0;
 	// how many times an appointment occurs
@@ -66,10 +77,9 @@ else{
 
 				// another occurrence
 				if($lastRowDateTime == $row['dateTime']){
-					$numOccurrences[$time] = $count + 1;
 					// account for the new occurrence
 					$count++;
-										
+					$numOccurrences[$time] = $count;				
 				}
 				
 				else{
@@ -104,13 +114,81 @@ else{
 		// Every row is pushed onto the studentInfoArray.
 		array_push($upcomingStudentInfoArray, $row);
 	}
+
+	////////////////////////Nat's additions//////////////////
 	$today = time();
-	// starts today at 8am
-	$startDate = strtotime("8am", $today);
-	$endDate = strtotime("+14 days", $today);
-	$startDateTime = date('g:i', $startDate);
+	$postedDate = $_POST['sel_startDate'];
+	if($_SESSION['lastPage'] == 'AdvisorOptionHeaders.php'){
+		
+		if(date('l')=='Sunday' || date('l')== 'Saturday'){
+			
+			// starts today at 8am
+			$startDate = strtotime("Monday 8am");
+			$startDateTime = date('g:i', $startDate);
+		}
+		else{
+			$startDate = strtotime("8am", $today);
+			
+		}
+	}
+	//from this page
+	else{
+		$startDate = strtotime("8am", strtotime($postedDate));
+		$startDateTime = date('g:i', $startDate);
+	}
+
+	//the advisor
+	echo "Advisor:<select name='sel_advisorView'>";
+	foreach($advisors as $advisorsId=>$advisorName){
+		if($advisorName != 'Group Advising'){
+			echo"<option value = '$advisorsId'";
+			if($advisorId == $advisorsId){
+				echo "selected";
+			}
+			echo '>';
+		}
+		echo "$advisorName</option>";
+	}
+	echo "</select>";
+
+
+	//form for choosing a time/////////	
+	//this should be in sql format
+
+	///TEMPORARILY SETTING THE SESSION VARS HERE FOR START AND END////
+	$_SESSION['startGroupTime'] = '2015-03-02 08:00:00';
+	$_SESSION['endGroupTime'] = '2015-05-20 08:00:00';
+		
+	$counterDay = $_SESSION['startGroupTime'];
+	$counterEndDay = $_SESSION['endGroupTime'];
 	
-	while($startDate < $endDate){
+	echo"<form action = 'AdvisorViewApts.php' method='post'>";
+	echo"Day:<select name='sel_startDate'>";
+	while($counterDay < $counterEndDay){
+		$userFormatCounterDay = date("l, m/d/Y", strtotime($counterDay));
+		echo"<option value='$counterDay'";
+			//if same day in the select box as the start day
+			if(date('Y-m-d', strtotime($counterDay)) == date('Y-m-d', $startDate)){
+				echo "selected";
+			}
+		echo">$userFormatCounterDay</option>";
+			
+		if(date('l', strtotime($counterDay)) == "Friday"){
+			$counterDay = date('Y-m-d 08:00:00',strtotime("+3 days", strtotime($counterDay)));
+		}
+		else{
+			$counterDay = date('Y-m-d 08:00:00',strtotime("+1 days", strtotime($counterDay)));
+		}
+	}
+	echo "</select><br>";
+	echo "<input type='submit'value='View Schedule'>";
+	echo "</form><br>";
+
+	//don't forget to make the start date from the variable in the session
+	/////////////////////////////////////////////////////////
+
+	//no longer looping, just viewing a single day
+	//while($startDate < $endDate){
 	
 	$dow = date("l", $startDate);
 	$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
@@ -240,14 +318,14 @@ else{
 	} // end if
 	// next day
 	
-	$startDate = strtotime("8am", $startDate);
-	$startDate = strtotime("+1 day", $startDate);
+	//$startDate = strtotime("8am", $startDate);
+	//$startDate = strtotime("+1 day", $startDate);
 	// update values
-	$startDateTime = date('g:i', $startDate);
-	$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
+	//$startDateTime = date('g:i', $startDate);
+	//$userFormatDateTime = date('l, m/d/Y, g:i A', $startDate);
 	echo"</table>";
 	echo "<br>";
-	} // end while $startDate < $endDate
+	//} // end while $startDate < $endDate
 	echo "<br>";
 	
 } // End of big else statement

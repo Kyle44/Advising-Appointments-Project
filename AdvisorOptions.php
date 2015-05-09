@@ -58,8 +58,9 @@ foreach($advisors as $advisorsId=>$advisorName){
 	//}
 	echo "$advisorName</option>";
 }
-echo "</select><br><br>";
 */
+echo "</select><br><br>";
+
 ?>
 
 

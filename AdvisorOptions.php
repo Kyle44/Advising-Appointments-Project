@@ -17,7 +17,7 @@ include('Proj2Head.html');
 //variables to be used as default values
 $advisorId = $_SESSION['advisorId'];
 $advisors = $_SESSION['advisors'];
-$advisorView = $_SESSION['advisorView'];
+//$advisorView = $_SESSION['advisorView'];
 $searchStudentID = $_SESSION['searchStudentID'];
 $searchStudentlName = $_SESSION['searchStudentlName'];
 $cancelID = $_SESSION['cancelID'];
@@ -46,6 +46,7 @@ $scheduleExistingID = $_SESSION['scheduleExistingID'];
 	<?php if($_SESSION['advisorDecision'] == 'viewAppointment'){echo 'checked';}?>
 > View Schedule
 <?php
+/*
 echo "<select name='sel_advisorView'>";
 foreach($advisors as $advisorsId=>$advisorName){
 	//if($advisorName != 'Group Advising'){
@@ -58,6 +59,7 @@ foreach($advisors as $advisorsId=>$advisorName){
 	echo "$advisorName</option>";
 }
 echo "</select><br><br>";
+*/
 ?>
 
 

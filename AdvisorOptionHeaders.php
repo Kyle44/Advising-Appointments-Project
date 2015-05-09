@@ -154,10 +154,10 @@ $advisorsDecision = $_POST['rb_option'];
 $_SESSION['advisorDecision'] = $advisorsDecision;
 
 //select boxes
-$advisorView = $_POST['sel_advisorView'];
+//$advisorView = $_POST['sel_advisorView'];
 $advisorReschedule = $_POST['sel_advisorReschedule'];
 $advisorSchedule = $_POST['sel_advisorSchedule'];
-$_SESSION['advisorView'] = $advisorView;
+//$_SESSION['advisorView'] = $advisorView;
 
 if($advisorsDecision == 'rescheduleAppointment'){
 	$_SESSION['advisorReschedule'] = $advisorReschedule;
@@ -199,13 +199,6 @@ if($advisorsDecision == 'selectAppointment'){
 
 elseif($advisorsDecision == 'viewAppointment'){
 	
-	if(date("l") == 'Saturday' || date("l") == 'Sunday'){
-		$_SESSION['viewAptsDate'] = date('Y-m-d 00:00:00', strtotime('Monday'));
-	}
-	else{
-
-		$_SESSION['viewAptsDate'] = date("Y-m-d 00:00:00");
-	}
 	header('Location: AdvisorViewApts.php');
 }
 

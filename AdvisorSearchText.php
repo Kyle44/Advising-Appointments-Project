@@ -110,7 +110,14 @@ foreach(array_unique($studentIdArray) as $element){
 	echo "<br>";
 } // end big for
 
+?>
+<form action='AdvisorOptions.php' name='AVAtoAOptions'>
+	<!--Go Back button-->
+	<input type='submit' value='Go Back'>
+	<!-- End of form  -->
+	</form>
 
+<?php
 
 $_SESSION['lastPage'] = "AdvisorSearchText.php";
 include('Proj2Tail.html');

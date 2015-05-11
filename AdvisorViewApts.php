@@ -123,7 +123,8 @@ else{
 		if(date('l')=='Sunday' || date('l')== 'Saturday'){
 			
 			// starts today at 8am
-			$startDate = strtotime("Monday 8am");
+			$startDate = strtotime("Monday");
+			$startDate = strtotime("8 am", $startDate);
 			$startDateTime = date('g:i', $startDate);
 		}
 		else{
@@ -156,11 +157,17 @@ else{
 	//this should be in sql format
 
 	///TEMPORARILY SETTING THE SESSION VARS HERE FOR START AND END////
-	$_SESSION['startGroupTime'] = '2015-03-02 08:00:00';
-	$_SESSION['endGroupTime'] = '2015-05-20 08:00:00';
-		
-	$counterDay = $_SESSION['startGroupTime'];
-	$counterEndDay = $_SESSION['endGroupTime'];
+
+	if(!$_SESSION['demo']){
+
+		$counterDay = '2015-03-02 08:00:00';
+		$counterEndDay = '2015-05-01 08:00:00';
+
+	}
+	else{
+		$counterDay = date('Y-m-d H:i:s', strtotime("-2 weeks", time()));
+		$counterEndDay = date('Y-m-d H:i:s', strtotime("+2 weeks", time()));
+	}
 	
 	echo"<form action = 'AdvisorViewApts.php' method='post'>";
 	echo"Day:<select name='sel_startDate'>";
@@ -183,9 +190,6 @@ else{
 	echo "</select><br>";
 	echo "<input type='submit'value='View Schedule'>";
 	echo "</form><br>";
-
-	//don't forget to make the start date from the variable in the session
-	/////////////////////////////////////////////////////////
 
 	//no longer looping, just viewing a single day
 	//while($startDate < $endDate){
@@ -280,12 +284,22 @@ else{
 
 
 		elseif($userFormatDateTime == $userFormatAptDateTime){
-			$studentMajor = $upcomingStudentInfoArray[$j]['major'];
+
+			//do some sql in here for advising_availabilities to get the major
+			$sqlDateTime = date('Y-m-d H:i:s', $startDate);
+			$sql = "SELECT * FROM `Advising_Availability2` WHERE `advisorId` = 'GROUPAP'
+					AND `dateTime` = '$sqlDateTime'";
+			$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+			$row = mysql_fetch_assoc($rs);
+			
+			$studentMajor = $row['major'];
+	
+			//$studentMajor = $upcomingStudentInfoArray[$j]['major'];
 			echo "<tr>";	
 				echo "<td>$userFormatTime</td>";
 				echo "<td>Group Appointment</td>";
-				echo "<td>$studentMajor</td>";
 				echo "<td></td>";
+				echo "<td>$studentMajor</td>";
 				echo "<td></td>";
 			echo"</tr>";
 			// break for loop if this occurs

@@ -161,10 +161,21 @@ $advisorSchedule = $_POST['sel_advisorSchedule'];
 
 if($advisorsDecision == 'rescheduleAppointment'){
 	$_SESSION['advisorReschedule'] = $advisorReschedule;
+	if($advisorReschedule == 'GROUPAP'){
+		$advisorsDecision = 'rescheduleToGroup';
+	}
+	else{
+		$advisorsDecision = 'rescheduleToIndividual';
+	}
 }
-
 else if($advisorsDecision == 'scheduleAppointment'){
 	$_SESSION['advisorSchedule'] = $advisorSchedule;
+	if($advisorSchedule == 'GROUPAP'){
+		$advisorsDecision = 'scheduleGroup';
+	}
+	else{
+		$advisorsDecision = 'scheduleIndividual';
+	}
 }
 
 

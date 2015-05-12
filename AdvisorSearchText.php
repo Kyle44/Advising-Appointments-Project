@@ -2,7 +2,7 @@
 /*
 Name: Nathaniel Baylon, Tommy Tran, Kyle Fritz
 Date: 5/8/2015
-Last Modified: 5/9/15
+Last Modified: 5/11/15
 Class: CMSC331
 Project: Project 2
 File: AdvisorSearchText.php
@@ -57,19 +57,23 @@ foreach($studentArray as $element){
 
 //print_r($apts);
 
+$pastAptsLen = 0;
+$upcomingAptsLen = 0;
+
+
 foreach($apts as $elem){
 	// put the rows into the arrays
 	if($today > $elem['dateTime']){
 		$elem['dateTime'] = strtotime($elem['dateTime']);
-		$elem['dateTime'] = date('m-d-Y h:i A', $elem['dateTime']);
+		$elem['dateTime'] = date('m-d-Y @ h:i A', $elem['dateTime']);
 		array_push($pastApts, $elem);
-		//echo"past $elem[dateTime] <br>";
+		$pastAptsLen++;
 	}
 	else{
 		$elem['dateTime'] = strtotime($elem['dateTime']);
 		$elem['dateTime'] = date('m-d-Y h:i A', $elem['dateTime']);
 		array_push($upcomingApts, $elem);
-		//echo"upcoming $elem <br>";
+		$upcomingAptsLen++;
 	}
 } // end for
 
@@ -83,32 +87,98 @@ foreach($studentArray as $student){
 
 
 // Prints all of the appointments for each student
-// array_unique used to find unique first names in the studentArray
+// array_unique used to find unique ids in the studentArray
 foreach(array_unique($studentIdArray) as $element){
+	// create the table 
+		?>
+		<table border = "3">
+		<!--caption defined right after table tag-->
+		<!--easy way to get the caption (or any html tag) to include a php variable below:-->
+		<?php 
+		echo"<caption>$userFormatDate</caption>";
+		?>
+		<tr>
+			<th>Student</th>
+			<th>Email</th>
+			<th>Major</th>
+			<th>Student Id</th>
+
+		<tr>
+	<?php
 	foreach($studentArray as $stud){
 		if($element == $stud['studentId']){
-			echo $stud['fName']." ".$stud['lName']."<br>";
+			echo "<tr>";	
+				echo "<td> $stud[fName] $stud[lName] </td>";
+				echo "<td>$stud[studentEmail]</td>";
+				echo "<td>$stud[major]</td>";
+				echo "<td>$stud[studentId]</td>";
+			echo"</tr>";
 		}
 	}
-	echo "Upcoming Appointments: <br>";
-	foreach($upcomingApts as $elemApts){
-		if($element == $elemApts['studentId']){
-			//echo date_format($elemApts['dateTime'], 'm-d-Y H:i');
-			echo $elemApts['dateTime']."<br>";
-		} // end if
-	} // end for
+	echo"</table>";
 	echo "<br>";
 
-
-	echo "Past Appointments: <br>";
-	foreach($pastApts as $elemApts){
-		if($element == $elemApts['studentId']){
-			//echo date_format($elemApts['dateTime'], 'm-d-Y H:i');
-			echo $elemApts['dateTime']."<br>";
+$count = 0;
+foreach($upcomingApts as $elemApts){
+	if($element == $elemApts['studentId']){
+		if($count == 0){
+			echo "Upcoming Appointments";
+			// create the table 
+			?>
+			<table border = "3">
+			<!--caption defined right after table tag-->
+			<!--easy way to get the caption (or any html tag) to include a php variable below:-->
+			<?php 
+			$count = 1;
+			?>
+			<tr>
+				<th>Time</th>
+				<th>Advisor</th>
+			<tr>
+			<?php
 		} // end if
+		echo "<tr>";	
+			echo "<td> $elemApts[dateTime] </td>";
+			echo "<td> $elemApts[advisorId] </td>";
+		echo"</tr>";
+
+	
+
 	} // end for
+	echo"</table>";
 	echo "<br>";
+} // end if
+
+$count = 0;
+foreach($pastApts as $elemApts){
+	if($element == $elemApts['studentId']){
+		if($count == 0){
+			echo "Past Appointments";
+			// create the table 
+			?>
+			<table border = "3">
+			<!--caption defined right after table tag-->
+			<!--easy way to get the caption (or any html tag) to include a php variable below:-->
+			<?php 
+			$count = 1;
+			?>
+			<tr>
+				<th>Time</th>
+				<th>Advisor</th>
+			<tr>
+			<?php
+		} // end if
+		echo "<tr>";	
+			echo "<td> $elemApts[dateTime] </td>";
+			echo "<td> $elemApts[advisorId] </td>";
+		echo"</tr>";
+	} // end if
+} // end for
+echo"</table>";
+echo "<br>";
+echo "<br>";
 } // end big for
+
 
 ?>
 <form action='AdvisorOptions.php' name='AVAtoAOptions'>
